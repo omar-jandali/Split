@@ -11,3 +11,35 @@ from .models import *
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=20)
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
+
+class SignupForm(forms.ModelForm):
+    account_choices = (('INDIVIDUAL', 'Individual'),
+                       ('BUSINESS', 'Business'))
+    username = forms.CharField(
+        max_length=16,
+        help_text="4 - 16 characters, (Aa-Zz), (0-9), (@), (.), (+), (-). (_)")
+    password = forms.CharField(
+        max_length=16,
+        widget=forms.PasswordInput,
+        help_text='Must be 8 - 16 characters')
+    verify = forms.CharField(
+        max_length=16,
+        widget=forms.PasswordInput,
+        help_text='Must match password')
+    account = forms.TypedChoiceField(
+        choices = account_choices
+    )
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'verify', 'email', 'account']
+
+class ProfileForm(forms.ModelForm):
+    f_name = forms.CharField(label='First Name')
+    l_name = forms.CharField(label='Last Name')
+    bio = forms.CharField(label='Bio')
+    dob = forms.DateField(label='Date of Birth')
+    gender = forms.CharField(label='Gender')
+    phone = forms.IntegerField(label='Phone')
+    class Meta:
+        model = Profile
+        fields = ['f_name', 'l_name', 'bio', 'dob', 'gender', 'phone']

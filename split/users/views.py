@@ -17,3 +17,25 @@ def login(request):
             'form':form,
         }
         return render(request, 'users/login.html', parameters)
+
+def signup(request):
+    if request.method == 'POST':
+        cheese = 'cheese'
+        return redirect('test')
+    else:
+        form = SignupForm()
+        parameters = {
+            'form':form
+        }
+        return render(request, 'users/signup.html', parameters)
+
+def profile(request):
+    if request.method == 'POST':
+        cheese = 'cheese'
+        return redirect('test')
+    else:
+        form = ProfileForm()
+        parameters = {
+            'form':form,
+        }
+        return render(request, 'users/profile_personal.html', parameters)
