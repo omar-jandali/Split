@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
+from localflavor.us.forms import USStateField, USPhoneNumberField, USZipCodeField
+
 # all model imports related to this project
 from .models import *
 
@@ -39,7 +41,6 @@ class ProfileForm(forms.ModelForm):
     bio = forms.CharField(label='Bio')
     dob = forms.DateField(label='Date of Birth')
     gender = forms.CharField(label='Gender')
-    phone = forms.IntegerField(label='Phone')
     class Meta:
         model = Profile
         fields = ['f_name', 'l_name', 'bio', 'dob', 'gender', 'phone']
@@ -49,8 +50,6 @@ class VerifyPersonalForm(forms.ModelForm):
     lob = forms.CharField(label='Occupation')
     street = forms.CharField(label='Street')
     city = forms.CharField(label='City')
-    state = forms.CharField(label='State')
-    zip_code = forms.CharField(label='Postal Code')
     ssn = forms.IntegerField(label='SSN - Last 4')
     class Meta:
         model = Profile
@@ -61,8 +60,6 @@ class VerifyBusinessForm(forms.ModelForm):
     lob = forms.CharField(label='Industry')
     street = forms.CharField(label='Street')
     city = forms.CharField(label='City')
-    state = forms.CharField(label='State')
-    zip_code = forms.CharField(label='Postal Code')
     tin = forms.IntegerField(label='TIN/EIN')
     class Meta:
         model = Profile

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from django_localflavor_us.models import USStateField
+from localflavor.us.models import USStateField, PhoneNumberField, USZipCodeField
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # server
@@ -11,8 +11,8 @@ class Profile(models.Model):
     street = models.CharField(max_length=200, default='street address')
     city = models.CharField(max_length=100, default='city')
     state = USStateField(default='CA')
-    zip_code = models.IntegerField(default=12345)
-    phone = models.BigIntegerField(default=0)  # user
+    zip_code = USZipCodeField(default=12345)
+    phone = PhoneNumberField(default=0)  # user
     dob = models.DateField(default='1950-01-01')
     gender = models.CharField(max_length=5, default='Other')
     lob = models.CharField(max_length=40, default='occupation')
