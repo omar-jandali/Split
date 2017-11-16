@@ -38,4 +38,26 @@ def profile(request):
         parameters = {
             'form':form,
         }
-        return render(request, 'users/profile_personal.html', parameters)
+        return render(request, 'users/profile.html', parameters)
+
+def verify_personal(request):
+    if request.method == 'POST':
+        cheese = 'cheese'
+        return redirect('test')
+    else:
+        form = VerifyPersonalForm()
+        parameters = {
+            'form':form,
+        }
+        return render(request, 'users/personal.html', parameters)
+
+def verify_business(request):
+    if request.method == 'POST':
+        cheese = 'cheese'
+        return redirect('test')
+    else:
+        form = VerifyBusinessForm()
+        parameters = {
+            'form':form,
+        }
+        return render(request, 'users/business.html', parameters)

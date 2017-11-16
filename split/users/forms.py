@@ -43,3 +43,27 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['f_name', 'l_name', 'bio', 'dob', 'gender', 'phone']
+
+class VerifyPersonalForm(forms.ModelForm):
+    dba = forms.CharField(label='Company')
+    lob = forms.CharField(label='Occupation')
+    street = forms.CharField(label='Street')
+    city = forms.CharField(label='City')
+    state = forms.CharField(label='State')
+    zip_code = forms.CharField(label='Postal Code')
+    ssn = forms.IntegerField(label='SSN - Last 4')
+    class Meta:
+        model = Profile
+        fields = ['dba', 'lob', 'street', 'city', 'state', 'zip_code']
+
+class VerifyBusinessForm(forms.ModelForm):
+    dba = forms.CharField(label='Company')
+    lob = forms.CharField(label='Industry')
+    street = forms.CharField(label='Street')
+    city = forms.CharField(label='City')
+    state = forms.CharField(label='State')
+    zip_code = forms.CharField(label='Postal Code')
+    tin = forms.IntegerField(label='TIN/EIN')
+    class Meta:
+        model = Profile
+        fields = ['dba', 'lob', 'street', 'city', 'state', 'zip_code']
