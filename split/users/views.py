@@ -1,13 +1,14 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
 
 from .forms import *
 from .method import *
 
-def login(request):
+def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -31,7 +32,7 @@ def login(request):
         }
         return render(request, 'users/login.html', parameters)
 
-def signup(request):
+def user_signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -47,8 +48,8 @@ def signup(request):
                     password = secure_password,
                     email = email,
                 )
-                request.session['username'] = username
-                return redirect('test')
+                login(request, user)
+                return redirect('home')
             else:
                 form = SignupForm()
                 parameters = {
@@ -95,17 +96,10 @@ def verify_business(request):
         }
         return render(request, 'users/business.html', parameters)
 
-def home(request):
-    user = loggedInUser(request)
-    parameters = {
-        'user':user,
-    }
-    return render(request, 'users/home.html', parameters)
+@login_required(login_url='/signup/')
+def user_home(request):
+    return render(request, 'users/home.html')
 
-def logout(request):
-    if 'username' not in request.session:
-        return redirect('login')
-    else:
-        username = request.session['username']
-        request.session.pop('username')
-        return redirect('login')
+def user_logout(request):
+    logout(request)
+    return redirect('login')

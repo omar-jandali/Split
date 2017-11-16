@@ -10,12 +10,3 @@ from .method import *
 
 def test(request):
     return render(request, 'users/test.html')
-
-
-def loggedInUser(request):
-    if 'username' in request.session:
-        username = request.session['username']
-        currentUser = User.objects.get(username = username)
-        return currentUser
-    else:
-         return redirect('test')
