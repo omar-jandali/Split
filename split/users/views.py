@@ -41,6 +41,9 @@ def user_signup(request):
             password = cd['password']
             verify = cd['verify']
             email = cd['email']
+            valid_user = User.objects.filter(username = username).first()
+            if valid_user:
+                return redirect('login')
             if password == verify:
                 secure_password = make_password(password)
                 user = User.objects.create(

@@ -7,6 +7,5 @@ from django.contrib.auth.hashers import make_password
 from .forms import *
 from .method import *
 
-
 def test(request):
     return render(request, 'users/test.html')
