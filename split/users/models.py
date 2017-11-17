@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User, UserManager
 
+# importing of specific fields for formatting
 from localflavor.us.models import USStateField, PhoneNumberField, USZipCodeField
 
+# the following is the users profile model
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # server
     f_name = models.CharField(max_length=25, default='first')
