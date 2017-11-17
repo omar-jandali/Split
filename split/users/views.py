@@ -17,12 +17,14 @@ def user_login(request):
             password = cd['password']
             user = authenticate(username=username, password=password)
             if user:
-                request.session['username'] = username
+                login(request, user)
                 return redirect('home')
             else:
                 form = LoginForm()
+                error = 'Invalid Username/Password'
                 parameters = {
                     'form':form,
+                    'error':error
                 }
                 return render(request, 'users/login.html', parameters)
     else:
@@ -33,7 +35,7 @@ def user_login(request):
         return render(request, 'users/login.html', parameters)
 
 def user_signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
@@ -41,9 +43,6 @@ def user_signup(request):
             password = cd['password']
             verify = cd['verify']
             email = cd['email']
-            valid_user = User.objects.filter(username = username).first()
-            if valid_user:
-                return redirect('login')
             if password == verify:
                 secure_password = make_password(password)
                 user = User.objects.create(
@@ -55,10 +54,20 @@ def user_signup(request):
                 return redirect('home')
             else:
                 form = SignupForm()
+                error = ' Passwords don\'t match '
                 parameters = {
                     'form':form,
+                    'error':error
                 }
                 return render(request, 'users/signup.html', parameters)
+        else:
+            error = form.errors
+            form = SignupForm()
+            parameters = {
+                'form':form,
+                'error':error,
+            }
+            return render(request, 'users/signup.html', parameters)
     else:
         form = SignupForm()
         parameters = {

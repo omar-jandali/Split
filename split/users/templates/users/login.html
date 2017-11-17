@@ -2,7 +2,7 @@
 
 {% block standard %}
     <h1>Login</h1>
-    <p>{{ message }}</p>
+    <p>{{ error }}</p>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}

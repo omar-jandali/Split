@@ -2,7 +2,11 @@
 
 {% block standard %}
     <h1>Signup</h1>
-    <p>{{ message }}</p>
+    {% if error %}
+      {{ error.username }}
+      {{ error.email }}
+      {{ error.password }}
+    {% endif %}
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
