@@ -12,7 +12,7 @@ from .method import *
 
 # the users login  view
 def user_login(request):
-    # check if the form was submitted 
+    # check if the form was submitted
     if request.method == 'POST':
         # grab the form
         form = LoginForm(request.POST)
@@ -78,7 +78,7 @@ def user_signup(request):
                 )
                 # login the user that was just created
                 login(request, user)
-                return redirect('home')
+                return redirect('profile')
             else:
                 # re-display the form after error
                 form = SignupForm()
@@ -113,45 +113,164 @@ def user_signup(request):
         # render the template
         return render(request, 'users/signup.html', parameters)
 
+# ensure someone is logged in
+@login_required(login_url='/login/')
+# setup user profile
 def profile(request):
+    # assign the logged in user as User
+    User = request.user
+    # check for form submission
     if request.method == 'POST':
-        cheese = 'cheese'
-        return redirect('test')
+        # grab the form
+        form = ProfileForm(request.POST)
+        # validate form content
+        if form.is_valid():
+            # cleaned version of the form content
+            cd = form.cleaned_data
+            # assign all the form fields
+            f_name = cd['f_name']
+            l_name = cd['l_name']
+            bio = cd['bio']
+            dob = cd['dob']
+            gender = cd['gender']
+            phone = cd['phone']
+            account = cd['account']
+            # create a profile for the user
+            profile = Profile.objects.create(
+                user = User,
+                f_name = f_name,
+                l_name = l_name,
+                bio = bio,
+                gender = gender,
+                phone = phone,
+            )
+            # redirect user to verify based on account type
+            if account == 'INDIVIDUAL':
+                # personal account
+                return redirect('personal')
+            if account == 'BUSINESS':
+                # business account
+                return redirect('business')
+        else:
+            # if form is not valid redirect to testing page
+            return redirect('test')
     else:
+        # initial profile form
         form = ProfileForm()
+        # parameters to pass to the html template
         parameters = {
             'form':form,
         }
+        # render the profile form for user to fill out
         return render(request, 'users/profile.html', parameters)
 
+# ensure someoene is logged in
+@login_required(login_url='/login/')
+# verify users information
 def verify_personal(request):
+    # grab the logged in user
+    User = request.user
+    # check to see if form was submitted
     if request.method == 'POST':
-        cheese = 'cheese'
-        return redirect('test')
+        # grab the submitted form
+        form = VerifyPersonalForm(request.POST)
+        # validate the inputs
+        if form.is_valid():
+            # grab the cleaned version of form
+            cd = form.cleaned_data
+            # assign all of the values
+            dba = cd['dba']
+            lob = cd['lob']
+            street = cd['street']
+            city = cd['city']
+            state = cd['state']
+            zip_code = cd['zip_code']
+            # grab the users existing Profile
+            profile = Profile.objects.get(user = User)
+            # update profile object
+            update_profile = profile
+            update_profile.dba = dba
+            update_profile.lob = lob
+            update_profile.street = street
+            update_profile.city = city
+            update_profile.zip_code = zip_code
+            update_profile.save()
+            # redirect to users home page
+            return redirect('home')
+        else:
+            # redirect to test if invaid form
+            return redirect('test')
     else:
+        # the form to be submitted
         form = VerifyPersonalForm()
+        # content passed to the html page
         parameters = {
             'form':form,
         }
+        # render initial form for user to fill out
         return render(request, 'users/personal.html', parameters)
 
+# make sure someone is logged in
+@login_required(login_url='/login/')
+# add busines verification to project
 def verify_business(request):
+    # grab the logged in user
+    User = request.user
+    # check to see if form was submitted
     if request.method == 'POST':
-        cheese = 'cheese'
-        return redirect('test')
+        # grab the submitted form
+        form = VerifyBusinessForm(request.POST)
+        # validate the inputs
+        if form.is_valid():
+            # grab the cleaned version of form
+            cd = form.cleaned_data
+            # assign all of the values
+            dba = cd['dba']
+            lob = cd['lob']
+            street = cd['street']
+            city = cd['city']
+            state = cd['state']
+            zip_code = cd['zip_code']
+            # grab the users existing Profile
+            profile = Profile.objects.get(user = User)
+            # update profile object
+            update_profile = profile
+            update_profile.dba = dba
+            update_profile.lob = lob
+            update_profile.street = street
+            update_profile.city = city
+            update_profile.zip_code = zip_code
+            update_profile.save()
+            # redirect to users home page
+            return redirect('home')
+        else:
+            print(form.errors)
+            return redirect('test')
     else:
+        # the form to be submitted
         form = VerifyBusinessForm()
+        # everyting that is passed to html template
         parameters = {
             'form':form,
         }
+        # render the template for user to fill out
         return render(request, 'users/business.html', parameters)
 
 # ensure someoene is logged in
-@login_required(login_url='/signup/')
+@login_required(login_url='/login/')
 # the users home page
 def user_home(request):
+    # grab the current user
+    user = request.user
+    # grab the users Profile
+    profile = Profile.objects.get(user = user)
+    # parameters to pass to html template
+    parameters = {
+        'user':user,
+        'profile':profile
+    }
     # first template
-    return render(request, 'users/home.html')
+    return render(request, 'users/home.html', parameters)
 
 # ensure someoene is logged in
 @login_required(login_url='signup')

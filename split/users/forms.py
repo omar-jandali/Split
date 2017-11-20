@@ -15,8 +15,6 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
 class SignupForm(forms.ModelForm):
-    account_choices = (('INDIVIDUAL', 'Individual'),
-                       ('BUSINESS', 'Business'))
     username = forms.CharField(
         max_length=16,
         help_text="4 - 16 characters, (Aa-Zz), (0-9), (@), (.), (+), (-). (_)")
@@ -28,22 +26,33 @@ class SignupForm(forms.ModelForm):
         max_length=16,
         widget=forms.PasswordInput,
         help_text='Must match password')
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'verify', 'email']
+
+class ProfileForm(forms.ModelForm):
+    gender_choices = (('M', 'Male'),
+                      ('F', 'Female'),
+                      ('O', 'Other'))
+    account_choices = (('INDIVIDUAL', 'Individual'),
+                       ('BUSINESS', 'Business'))
+    f_name = forms.CharField(label='First Name')
+    l_name = forms.CharField(label='Last Name')
+    bio = forms.CharField(label='Bio')
+    dob = forms.DateField(
+        label='Date of Birth',
+        widget=forms.widgets.DateInput(attrs={'type':'date'})
+    )
+    gender = forms.TypedChoiceField(
+        choices = gender_choices,
+        label='Gender'
+    )
     account = forms.TypedChoiceField(
         choices = account_choices
     )
     class Meta:
-        model = User
-        fields = ['username', 'password', 'verify', 'email', 'account']
-
-class ProfileForm(forms.ModelForm):
-    f_name = forms.CharField(label='First Name')
-    l_name = forms.CharField(label='Last Name')
-    bio = forms.CharField(label='Bio')
-    dob = forms.DateField(label='Date of Birth')
-    gender = forms.CharField(label='Gender')
-    class Meta:
         model = Profile
-        fields = ['f_name', 'l_name', 'bio', 'dob', 'gender', 'phone']
+        fields = ['f_name', 'l_name', 'bio', 'dob', 'gender', 'phone', 'account']
 
 class VerifyPersonalForm(forms.ModelForm):
     dba = forms.CharField(label='Company')
