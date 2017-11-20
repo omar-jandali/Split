@@ -256,6 +256,46 @@ def verify_business(request):
         # render the template for user to fill out
         return render(request, 'users/business.html', parameters)
 
+# ensure someone is logged in
+@login_required(login_url='/login/')
+# a users Profile
+def search_user(request):
+    #check to see if form was submitted
+    if request.method == 'POST':
+        # grab the view_user form
+        searched = request.POST['searched']
+        # search for the username in the database
+        view = User.objects.filter(username = searched).first()
+        # validate if there is a user with username
+        if view == None:
+            # if no user with username, print error
+            print('invalid username')
+            # redirect logged in user to home
+            return redirect('home')
+        else:
+            # redirect to the users profile if the username is valid
+            return redirect('user_profile', username=view.username)
+
+# ensure someone is logged in
+@login_required
+# view any users profile
+def user_profile(request, username):
+    # grab the valid username from the user url
+    view = User.objects.filter(username = username).first()
+    # validate searched Username
+    if view == None:
+        # redirect if no user with username
+        return redirect('home')
+    # grab selected users profile
+    profile = Profile.objects.get(user = view)
+    # pass all the required info to the template
+    parameters = {
+        'view':view,
+        'profile':profile,
+    }
+    # render the users profile template with users information
+    return render(request, 'users/view_profile.html', parameters)
+
 # ensure someoene is logged in
 @login_required(login_url='/login/')
 # the users home page
