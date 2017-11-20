@@ -256,6 +256,25 @@ def verify_business(request):
         # render the template for user to fill out
         return render(request, 'users/business.html', parameters)
 
+# ensure someoene is logged in
+@login_required(login_url='/login/')
+# the users home page
+def user_home(request):
+    # grab the current user
+    user = request.user
+    # grab the users Profile
+    profile = Profile.objects.get(user = user)
+    # grab all of the request that the logged in user has
+    requests = Request.objects.filter(requested = user).all()
+    # parameters to pass to html template
+    parameters = {
+        'user':user,
+        'profile':profile,
+        'requests':requests,
+    }
+    # first template
+    return render(request, 'users/home.html', parameters)
+
 # ensure someone is logged in
 @login_required(login_url='/login/')
 # a users Profile
@@ -296,21 +315,26 @@ def user_profile(request, username):
     # render the users profile template with users information
     return render(request, 'users/view_profile.html', parameters)
 
-# ensure someoene is logged in
-@login_required(login_url='/login/')
-# the users home page
-def user_home(request):
-    # grab the current user
-    user = request.user
-    # grab the users Profile
-    profile = Profile.objects.get(user = user)
-    # parameters to pass to html template
-    parameters = {
-        'user':user,
-        'profile':profile
-    }
-    # first template
-    return render(request, 'users/home.html', parameters)
+# ensure that soeone is logged in
+@login_required
+# send requests between two users
+def send_request(request, username):
+    # grab the current user logged in
+    requester = request.user
+    # grab the user that was passed in the url
+    requested = User.objects.filter(username = username).first()
+    # validate the user that was passed through
+    if requested == None:
+        # if invalid, redirect to testing page
+        return redirect('test')
+    else:
+        # if valid, create a new request objects between the two users
+        new_request = Request.objects.create(
+            user = requester.username,
+            requested = requested,
+        )
+        # return home
+        return redirect('home')
 
 # ensure someoene is logged in
 @login_required(login_url='signup')

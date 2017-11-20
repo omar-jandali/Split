@@ -21,3 +21,15 @@ class Profile(models.Model):
     dba = models.CharField(max_length=40, default='comapny')
     synapse_id = models.CharField(max_length=200, default='123456789')
     created = models.DateTimeField(auto_now_add=True)  # server
+
+# the following is the model for sending friend requests
+class Request(models.Model):
+    user = models.CharField(max_length=22, default='current user')
+    requested = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+# the following are models for accepted friend requests
+class Friend(models.Model):
+    user = models.CharField(max_length=22, default='current user')
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    created = models.DateTimeField(auto_now_add=True)

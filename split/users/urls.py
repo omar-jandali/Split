@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^test/$', method.test, name='test'),
     url(r'^search/$', views.search_user, name="searched"),
     url(r'^(?P<username>[\w+]+)/$', views.user_profile, name='user_profile'),
+    url(r'^(?P<username>[\w+]+)/request/$', views.send_request, name='send_request'),
 ]

@@ -1,4 +1,9 @@
-<p>{{ view.username }}</p>
+<p>
+  {{ view.username }}
+  {% if view.username != user.username %}
+    <a href="{% url 'send_request' view.username %}">Send Request</a>
+  {% endif %}
+</p>
 <p>{{ view.email }}</p>
 <p>{{ profile.f_name }} - {{ profile.l_name }}</p>
 <p>{{ profile.bio }}</p>
