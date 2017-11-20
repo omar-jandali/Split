@@ -266,11 +266,16 @@ def user_home(request):
     profile = Profile.objects.get(user = user)
     # grab all of the request that the logged in user has
     requests = Request.objects.filter(requested = user).all()
+    # list of all the users friends
+    friender = Friend.objects.filter(user = user.username).all()
+    friended = Friend.objects.filter(friend = user).all()
+    friends = friender | friended
     # parameters to pass to html template
     parameters = {
         'user':user,
         'profile':profile,
         'requests':requests,
+        'friends':friends
     }
     # first template
     return render(request, 'users/home.html', parameters)
@@ -335,6 +340,51 @@ def send_request(request, username):
         )
         # return home
         return redirect('home')
+
+# ensure that someone is logged in
+@login_required
+# accept a friends request
+def accept_request(request, username):
+    # grab the logged in user
+    user = request.user
+    # grab the user object of the person whose friend request is being accepted
+    accepted = User.objects.get(username = username)
+    # check to see that there is a friend request
+    request = Request.objects.filter(requested = user).filter(user = accepted.username).first()
+    # if the friend request is valid process the acceptance
+    if request:
+        # create a friends object that will make the two users friends
+        new_friend = Friend.objects.create(
+            user = user.username,
+            friend = accepted
+        )
+        # delete the request that was sent
+        request.delete()
+        # send the user back to home page
+        return redirect('home')
+    else:
+        # if invalid friend request, sent user back to test
+        return redirect('test')
+
+# ensure someone is logged in
+@login_required
+# decline a friend request sent to you
+def decline_request(request, username):
+    # grab the logged in user
+    user = request.user
+    # grab the user object of the person whose friend request was being declined
+    declined = User.objects.get(username = username)
+    # check to see if there is a friend request
+    request = Request.objects.filter(requested = user).filter(user = declined.username).first()
+    # if the friend request is valid, process the request
+    if request:
+        # delete the friend request from teh database
+        request.delete()
+        # redirect the user to home
+        return redirect('home')
+    else:
+        # if not valid, return the user to the test page
+        return redirect('test')
 
 # ensure someoene is logged in
 @login_required(login_url='signup')

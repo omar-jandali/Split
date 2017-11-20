@@ -14,7 +14,20 @@
 <p>{{profile.city}}, {{profile.state}} {{profile.zip_code}}</p>
 <h3>Requests</h3>
 {% for request in requests %}
-<p>{{ request.user }}</p>
+  <p>
+    {{ request.user }}
+    <a href="{% url 'accept_request' request.user %}">Accept</a>
+    <a href="{% url 'decline_request' request.user %}">Decline</a>
+  </p>
+{% endfor %}
+<h3>Friends</h3>
+{% for friend in friends %}
+  {% if friend.user == user.username %}
+    <p>{{ friend.friend.username }}</p>
+  {% endif %}
+  {% if friend.friend == user %}
+    <p>{{ friend.user }}</p>
+  {% endif %}
 {% endfor %}
 
 <p><a href="{% url 'logout' %}">Logout</a></p>

@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^search/$', views.search_user, name="searched"),
     url(r'^(?P<username>[\w+]+)/$', views.user_profile, name='user_profile'),
     url(r'^(?P<username>[\w+]+)/request/$', views.send_request, name='send_request'),
+    url(r'^(?P<username>[\w+]+)/accept/$', views.accept_request, name='accept_request'),
+    url(r'^(?P<username>[\w+]+)/decline/$', views.decline_request, name='decline_request'),
 ]
