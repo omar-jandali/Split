@@ -2,6 +2,7 @@
   {% csrf_token %}
   <input type="text" name="searched" placeholder="Search">
 </form>
+<h3><a href="{% url 'groups' %}">Groups</a></h3>
 <p>{{ user.username }}</p>
 <p>{{ user.email }}</p>
 <p>{{profile.f_name}} - {{profile.l_name}}</p>

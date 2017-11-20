@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'general',
     'users',
-    'localflavor'
+    'localflavor',
+    'groups',
 ]
 
 MIDDLEWARE = [

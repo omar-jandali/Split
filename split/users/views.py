@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 # import all references from this specific app
 from .forms import *
 from .method import *
+from .models import *
 
 # the users login  view
 def user_login(request):
@@ -28,7 +29,7 @@ def user_login(request):
             if user:
                 # login the user to django session
                 login(request, user)
-                return redirect('home')
+                return redirect('groups')
             else:
                 # re-display form with error message
                 # the same form
@@ -196,7 +197,7 @@ def verify_personal(request):
             update_profile.zip_code = zip_code
             update_profile.save()
             # redirect to users home page
-            return redirect('home')
+            return redirect('groups')
         else:
             # redirect to test if invaid form
             return redirect('test')
@@ -242,7 +243,7 @@ def verify_business(request):
             update_profile.zip_code = zip_code
             update_profile.save()
             # redirect to users home page
-            return redirect('home')
+            return redirect('groups')
         else:
             print(form.errors)
             return redirect('test')
