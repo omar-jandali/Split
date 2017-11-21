@@ -1,13 +1,17 @@
-<p>
-  {{ view.username }}
-  {% if view.username != user.username %}
-    <a href="{% url 'send_request' view.username %}">Send Request</a>
-  {% endif %}
-</p>
-<p>{{ view.email }}</p>
-<p>{{ profile.f_name }} - {{ profile.l_name }}</p>
-<p>{{ profile.bio }}</p>
-<p>{{ profile.dba }}</p>
-<p>{{ profile.lob }}</p>
-<p>{{ profile.city }}, {{ profile.state }}</p>
-<p><a href="{% url 'logout' %}">Logout</a></p>
+{% extends "general/base.html" %}
+
+{% block standard %}
+  <p>
+    {{ view.username }}
+    {% if view.username != user.username %}
+      <a href="{% url 'send_request' view.username %}">Send Request</a>
+    {% endif %}
+  </p>
+  <p>{{ view.email }}</p>
+  <p>{{ profile.f_name }} - {{ profile.l_name }}</p>
+  <p>{{ profile.bio }}</p>
+  <p>{{ profile.dba }}</p>
+  <p>{{ profile.lob }}</p>
+  <p>{{ profile.city }}, {{ profile.state }}</p>
+  <p><a href="{% url 'logout' %}">Logout</a></p>
+{% endblock %}

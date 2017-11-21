@@ -1,34 +1,38 @@
-<form action="{% url 'searched' %}" method="POST">
-  {% csrf_token %}
-  <input type="text" name="searched" placeholder="Search">
-</form>
-<h3><a href="{% url 'groups' %}">Groups</a></h3>
-<p>{{ user.username }}</p>
-<p>{{ user.email }}</p>
-<p>{{profile.f_name}} - {{profile.l_name}}</p>
-<p>{{profile.bio}}</p>
-<p>{{profile.gender}}</p>
-<p>{{profile.phone}}</p>
-<p>{{profile.dba}}</p>
-<p>{{profile.lob}}</p>
-<p>{{profile.street}}</p>
-<p>{{profile.city}}, {{profile.state}} {{profile.zip_code}}</p>
-<h3>Requests</h3>
-{% for request in requests %}
-  <p>
-    {{ request.user }}
-    <a href="{% url 'accept_request' request.user %}">Accept</a>
-    <a href="{% url 'decline_request' request.user %}">Decline</a>
-  </p>
-{% endfor %}
-<h3>Friends</h3>
-{% for friend in friends %}
-  {% if friend.user == user.username %}
-    <p>{{ friend.friend.username }}</p>
-  {% endif %}
-  {% if friend.friend == user %}
-    <p>{{ friend.user }}</p>
-  {% endif %}
-{% endfor %}
+{% extends "general/base.html" %}
 
-<p><a href="{% url 'logout' %}">Logout</a></p>
+{% block standard %}
+  <form action="{% url 'searched' %}" method="POST">
+    {% csrf_token %}
+    <input type="text" name="searched" placeholder="Search">
+  </form>
+  <h3><a href="{% url 'groups' %}">Groups</a></h3>
+  <p>{{ user.username }}</p>
+  <p>{{ user.email }}</p>
+  <p>{{profile.f_name}} - {{profile.l_name}}</p>
+  <p>{{profile.bio}}</p>
+  <p>{{profile.gender}}</p>
+  <p>{{profile.phone}}</p>
+  <p>{{profile.dba}}</p>
+  <p>{{profile.lob}}</p>
+  <p>{{profile.street}}</p>
+  <p>{{profile.city}}, {{profile.state}} {{profile.zip_code}}</p>
+  <h3>Requests</h3>
+  {% for request in requests %}
+    <p>
+      {{ request.user }}
+      <a href="{% url 'accept_request' request.user %}">Accept</a>
+      <a href="{% url 'decline_request' request.user %}">Decline</a>
+    </p>
+  {% endfor %}
+  <h3>Friends</h3>
+  {% for friend in friends %}
+    {% if friend.user == user.username %}
+      <p>{{ friend.friend.username }}</p>
+    {% endif %}
+    {% if friend.friend == user %}
+      <p>{{ friend.user }}</p>
+    {% endif %}
+  {% endfor %}
+
+  <p><a href="{% url 'logout' %}">Logout</a></p>
+{% endblock %}

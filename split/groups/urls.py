@@ -4,5 +4,12 @@ from . import views
 urlpatterns = [
     url(r'^$', views.groups_home, name='groups'),
     url(r'^create/$', views.create_group, name='create_group'),
-    url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/$', views.group_home, name='group_home'),
+    url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/$',
+        views.group_home, name='group_home'),
+    url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/create_expense/$',
+        views.create_expense, name='create_expense'),
+    url(r'^(?P<expensename>[\w+-]+)/(?P<reference>[0-9]+)/even_expense/$',
+        views.even_expense, name='even_expense'),
+    url(r'^(?P<expensename>[\w+-]+)/(?P<reference>[0-9]+)/individual_expense/$',
+        views.individual_expense, name='individual_expense'),
 ]

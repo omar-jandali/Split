@@ -1,7 +1,16 @@
-<p>group home page</p>
-<p>{{ name }}</p>
-<p>{{ group.location }}</p>
-<p>{{ group.description }}</p>
-{% for member in members %}
-  <p>{{ member.user.username }}</p>
-{% endfor %}
+{% extends "general/base.html" %}
+
+{% block standard %}
+  <p>group home page</p>
+  <p>{{ name }}</p>
+  <p>{{ group.location }}</p>
+  <p>{{ group.description }}</p>
+  {% for member in members %}
+    <p>{{ member.user.username }}</p>
+  {% endfor %}
+  {% for expense in expenses %}
+    <p>{{ expense.user.username }} - {{ expense.location }} - {{ expense.description }} - {{ expense.amount }}</p>
+  {% endfor %}
+
+   <p><a href="{% url 'create_expense' group.id group.name|slugify %}">create expense</a></p>
+{% endblock %}

@@ -17,3 +17,19 @@ class Member(models.Model):
     # 1 = member
     # 2 - host
     created = models.DateTimeField(auto_now_add=True)
+
+# all of the expense in the application will be stored here
+class Expense(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
+    amount = models.DecimalField(decimal_places=2, max_digits=9, default=0)
+    description = models.CharField(max_length=200, default = 'expense')
+    name = models.CharField(max_length=100, default = 'expense')
+    location = models.CharField(max_length=100, default = 'location')
+    status = models.SmallIntegerField(default = 1)
+    # 1 = unpaid
+    # 2 = paid
+    reference = models.IntegerField(default = '101', null = True)
+    # reference is assigned for single transaction for tracking purposes
+    created_by = models.CharField(max_length = 200, default = 'username', null=True)
+    created = models.DateTimeField(auto_now_add=True)
