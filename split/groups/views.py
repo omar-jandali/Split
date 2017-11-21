@@ -71,26 +71,59 @@ def create_group(request):
                     selected = friend.friend
                     # check for selected in form
                     if selected.username in request.POST:
+                        # create a new member object
                         new_member = Member.objects.create(
                             user = selected,
                             group = new_group,
                             status = 1,
                         )
+                # chekc friend
                 if friend.friend == user:
+                    # grab the user object of the friend
                     selected = User.objects.get(username = friend.user)
+                    # validate of the friend was selected
                     if selected.username in request.POST:
+                        # create a new member objects
                         new_member = Member.objects.create(
                             user = selected,
                             group = new_group,
                             status = 1,
                         )
+            # redirect to the groups home page
             return redirect('groups')
         else:
+            # invalid form will redirect to a testing page
             return redirect('test')
     else:
+        # the form to be displayed
         form = CreateGroupForm()
+        # all of the parameters required
         parameters = {
             'form':form,
             'friends':friends,
         }
+        # rendering the html template if form was not submitted
         return render(request, 'groups/create_group.html', parameters)
+
+# ensure someone is logged in
+@login_required
+# individual groups home page
+def group_home(request, groupid, groupname):
+    # grab the logged in user
+    user = request.user
+    # unslugify the group name
+    name = groupname.replace('-', ' ')
+    # grab all of the groups from the members records
+    group = Group.objects.get(id = groupid)
+    # validate group passed
+    if group.name != name:
+        return redirect('groups')
+    # grab the group members
+    members = Member.objects.filter(group = group).all()
+    # everything passed to html template
+    parameters = {
+        'name':name,
+        'group':group,
+        'members':members
+    }
+    return render(request, 'groups/group_home.html', parameters)

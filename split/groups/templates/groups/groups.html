@@ -4,5 +4,5 @@
 
 <h3>Groups</h3>
 {% for group in groups %}
-  <p>{{ group.group.name }}</p>
+  <p><a href="{% url 'group_home' group.group.id group.group.name|slugify %}">{{ group.group.name }}</a></p>
 {% endfor %}

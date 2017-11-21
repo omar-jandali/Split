@@ -1,0 +1,7 @@
+<p>group home page</p>
+<p>{{ name }}</p>
+<p>{{ group.location }}</p>
+<p>{{ group.description }}</p>
+{% for member in members %}
+  <p>{{ member.user.username }}</p>
+{% endfor %}
