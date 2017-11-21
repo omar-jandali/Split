@@ -47,13 +47,19 @@ def group_home(request, groupid, groupname):
         return redirect('groups')
     # grab the group members
     members = Member.objects.filter(group = group).all()
-    # everything passed to html template
     expenses = Expense.objects.filter(group = group).all()
+    # list of bundles
+    bundles = Bundle.objects.filter(group = group).all()
+    # list of budle items
+    items = Item.objects.filter(group = group).all()
+    # everything passed to html template
     parameters = {
         'name':name,
         'group':group,
         'members':members,
         'expenses':expenses,
+        'bundles':bundles,
+        'items':items,
     }
     return render(request, 'groups/group_home.html', parameters)
 
@@ -316,6 +322,80 @@ def individual_expense(request, expensename, reference):
         }
         # render the html template
         return render(request, 'groups/individual_expense.html', parameters)
+
+# ensure that someone is logged in
+@login_required
+# creating bundle items
+def create_bundle(request, groupid, groupname):
+    # grab the logged in user
+    user = request.user
+    # grab the currentgroup
+    group = Group.objects.get(id = groupid)
+    # group members
+    members = Member.objects.filter(group = group).all()
+    members_count = Member.objects.filter(group = group).count()
+    # generate a reference number
+    reference = generate_number()
+    # check to see if the form was submitted
+    if request.method == 'POST':
+        # grab the form submiited
+        form = CreateBundleForm(request.POST)
+        # validate the form
+        if form.is_valid():
+            # grab the cleaned data from form
+            cd = form.cleaned_data
+            # grab the form content
+            cd = form.cleaned_data
+            name = cd['name']
+            amount1 = cd['amount1']
+            item1 = cd['item1']
+            amount2 = cd['amount2']
+            item2 = cd['item2']
+            amount3 = cd['amount3']
+            item3 = cd['item3']
+            count = 0
+            for member in members:
+                if member.user.username in request.POST:
+                    count = count + 1
+            split_1 = split_even(amount1, count)
+            split_2 = split_even(amount2, count)
+            split_3 = split_even(amount3, count)
+            total = split_1 + split_2 + split_3
+            for member in members:
+                if member.user.username in request.POST:
+                    new_bundle = Bundle.objects.create(
+                        user = member.user,
+                        group = group,
+                        name = name,
+                        reference = reference,
+                        total = total
+                    )
+            new_item = Item.objects.create(
+                group = group,
+                item = item1,
+                amount = split_1,
+                reference = reference
+            )
+            new_item = Item.objects.create(
+                group = group,
+                item = item2,
+                amount = split_2,
+                reference = reference
+            )
+            new_item = Item.objects.create(
+                group = group,
+                item = item3,
+                amount = split_3,
+                reference = reference
+            )
+            return redirect('group_home', groupid = groupid, groupname = groupname)
+    else:
+        form = CreateBundleForm()
+        parameters = {
+            'form':form,
+            'members':members,
+        }
+        return render(request, 'groups/create_bundle.html', parameters)
 
 # split an amount by number
 def split_even(amount, count):

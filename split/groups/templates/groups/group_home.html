@@ -11,6 +11,15 @@
   {% for expense in expenses %}
     <p>{{ expense.user.username }} - {{ expense.location }} - {{ expense.description }} - {{ expense.amount }}</p>
   {% endfor %}
+  {% for bundle in bundles %}
+    <p>{{ bundle.user.username }} = {{ bundle.name }} - {{ bundle.total }}</p>
+    {% for item in items %}
+      {% if item.reference == bundle.reference %}
+        <p>{{ item.item }} - {{ item.amount }}</p>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
 
    <p><a href="{% url 'create_expense' group.id group.name|slugify %}">create expense</a></p>
+   <p><a href="{% url 'create_bundle' group.id group.name|slugify %}"> create bundle</a></p>
 {% endblock %}
