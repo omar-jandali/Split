@@ -1,2 +1,8 @@
 <p>Groups Home</p>
+<p><a href="{% url 'create_group' %}">Create Group</a></p>
 <p><a href="{% url 'home' %}">Home</a></p>
+
+<h3>Groups</h3>
+{% for group in groups %}
+  <p>{{ group.group.name }}</p>
+{% endfor %}

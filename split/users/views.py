@@ -11,6 +11,9 @@ from .forms import *
 from .method import *
 from .models import *
 
+#import all references from other apps
+from groups.models import *
+
 # the users login  view
 def user_login(request):
     # check if the form was submitted
