@@ -16,7 +16,15 @@
         <p>Non Validation = {{ activity.description }}</p>
       {% endif %}
       {% if activity.category == 4 %}
-        <p>Validation = {{ activity.description }}</p>
+        <p>
+          Validation = {{ activity.description }}
+          {% if activity.expense != None %}
+            <a href="{% url 'verify_expense' activity.expense.id activity.id %}">Yes</a>
+          {% endif %}
+          {% if activity.bundle != None %}
+            <a href="{% url 'verify_bundle' activity.bundle.id activity.id %}">Yes</a>
+          {% endif %}
+        </p>
         {% if activity.reference != 0 %}
           {% for item in items %}
             {% if item.reference == activity.reference %}

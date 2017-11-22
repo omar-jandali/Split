@@ -307,12 +307,14 @@ def even_expense(request, expensename, reference):
             # the following are the two new activities for new expenses
             user_activity = GroupActivity.objects.create(
                 user = expense.user,
+                expense = expense,
                 group = group,
                 description = description_user,
                 category = 4,
             )
             general_activity = GroupActivity.objects.create(
                 user = expense.user,
+                expense = expense,
                 group = group,
                 description = description_general,
                 category = 1,
@@ -390,12 +392,14 @@ def individual_expense(request, expensename, reference):
                     # the following are the two new activities for new expenses
                     user_activity = GroupActivity.objects.create(
                         user = expense.user,
+                        expense = expense,
                         group = group,
                         description = description_user,
                         category = 4,
                     )
                     general_activity = GroupActivity.objects.create(
                         user = expense.user,
+                        expense = expense,
                         group = group,
                         description = description_general,
                         category = 1
@@ -512,6 +516,90 @@ def create_bundle(request, groupid, groupname):
             'members':members,
         }
         return render(request, 'groups/create_bundle.html', parameters)
+
+# ensure someone is logged in
+@login_required
+# verify personal expense
+def verify_expense(request, expenseid, activityid):
+    # grab the logged in user
+    user = request.user
+    # grab the expense by id
+    expense = Expense.objects.get(id = expenseid)
+    # grab the current group
+    group = Group.objects.get(id = expense.group.id)
+    # update expense from validation to specific
+    expense.status = 2
+    # save the change
+    expense.save()
+    # grab the current activity and the one after it - same activity
+    activity = GroupActivity.objects.get(id = activityid)
+    secondid = activity.id + 1
+    second = GroupActivity.objects.get(id = secondid)
+    # description for the new activities
+    description_user = 'You transfered $' + str(expense.amount) + ' to host for ' + expense.description
+    description_group = user.username + ' transfered $' + str(expense.amount) + ' to host for ' + expense.description
+    # new activity that will replce the old activities
+    user_activity = GroupActivity.objects.create(
+        user = user,
+        group = expense.group,
+        expense = expense,
+        description = description_user,
+        category = 2
+    )
+    group_activity = GroupActivity.objects.create(
+        user = user,
+        group = expense.group,
+        expense = expense,
+        description = description_group,
+        category = 1
+    )
+    # delete the two old activities
+    activity.delete()
+    second.delete()
+    # slugify the groups name
+    groupname = group.name.replace(' ', '-')
+    # return to the groups home page after verification
+    return redirect('group_home', groupid = group.id, groupname = groupname)
+
+# ensure someone is logged in
+@login_required
+# verify bundle expenses
+def verify_bundle(request, bundleid, activityid):
+    # grab the logged in user
+    user = request.user
+    # grab the bundle
+    bundle = Bundle.objects.get(id = bundleid)
+    # grab the current activity and the one after it - same activity
+    activity = GroupActivity.objects.get(id = activityid)
+    secondid = activity.id + 1
+    second = GroupActivity.objects.get(id = secondid)
+    # description for the new activities
+    description_user = 'You transfered $' + str(bundle.total) + ' to host for ' + bundle.name
+    description_group = user.username + ' transfered $' + str(bundle.total) + ' to host for ' + bundle.name
+    # new activity that will replce the old activities
+    user_activity = GroupActivity.objects.create(
+        user = user,
+        group = bundle.group,
+        bundle = bundle,
+        description = description_user,
+        reference = bundle.reference,
+        category = 2
+    )
+    group_activity = GroupActivity.objects.create(
+        user = user,
+        group = bundle.group,
+        bundle = bundle,
+        description = description_group,
+        reference = bundle.reference,
+        category = 1
+    )
+    # delete the two old activities
+    activity.delete()
+    second.delete()
+    # slugify groups name
+    groupname = bundle.group.name.replace(' ', '-')
+    # return to the groups home page after verification
+    return redirect('group_home', groupid = bundle.group.id, groupname = groupname)
 
 # split an amount by number
 def split_even(amount, count):

@@ -14,4 +14,8 @@ urlpatterns = [
         views.even_expense, name='even_expense'),
     url(r'^(?P<expensename>[\w+-]+)/(?P<reference>[0-9]+)/individual_expense/$',
         views.individual_expense, name='individual_expense'),
+    url(r'^(?P<expenseid>[\w+-]+)/(?P<activityid>[0-9]+)/verify/$',
+        views.verify_expense, name='verify_expense'),
+    url(r'^(?P<bundleid>[\w+-]+)/(?P<activityid>[0-9]+)/verify_bundle/$',
+        views.verify_bundle, name='verify_bundle'),
 ]
