@@ -47,6 +47,11 @@ def group_home(request, groupid, groupname):
         return redirect('groups')
     # grab the group members
     members = Member.objects.filter(group = group).all()
+    # find the host
+    for member in members:
+        if member.status == 2:
+            host = member
+    # grab all the expenses
     expenses = Expense.objects.filter(group = group).all()
     # list of bundles
     bundles = Bundle.objects.filter(group = group).all()
@@ -63,6 +68,7 @@ def group_home(request, groupid, groupname):
         'bundles':bundles,
         'items':items,
         'activities':activities,
+        'host':host
     }
     return render(request, 'groups/group_home.html', parameters)
 
@@ -212,6 +218,10 @@ def create_expense(request, groupid, groupname):
     group = Group.objects.get(id = groupid)
     # grab all the members of the current group
     members = Member.objects.filter(group = group).all()
+    # find the gorups host
+    for member in members:
+        if member.status == 2:
+            host = member
     # check to see if form was submitted
     if request.method == 'POST':
         # grabs the create expense form
@@ -290,6 +300,12 @@ def even_expense(request, expensename, reference):
         amount = expense.amount
         # grab the current group
         group = Group.objects.get(id = expense.group.id)
+    # find the members of the group
+    members = Member.objects.filter(group = group).all()
+    # find the gorups host
+    for member in members:
+        if member.status == 2:
+            host = member
     # split the amount based on number of members
     total = split_even(amount, expenses_count)
     # cycle through expenses
@@ -308,6 +324,7 @@ def even_expense(request, expensename, reference):
             user_activity = GroupActivity.objects.create(
                 user = expense.user,
                 expense = expense,
+                host = host.user.username,
                 group = group,
                 description = description_user,
                 category = 4,
@@ -315,6 +332,7 @@ def even_expense(request, expensename, reference):
             general_activity = GroupActivity.objects.create(
                 user = expense.user,
                 expense = expense,
+                host = host.user.username,
                 group = group,
                 description = description_general,
                 category = 1,
@@ -342,6 +360,12 @@ def individual_expense(request, expensename, reference):
     for expense in expenses:
         # grab the current group
         group = Group.objects.get(id = expense.group.id)
+    # grab the group member:
+    members = Member.objects.filter(group = group).all()
+    # grab the host
+    for member in members:
+        if member.status == 2:
+            host = member
     # check tp see if form was submitted
     if request.method == 'POST':
         # the returned formset
@@ -394,6 +418,7 @@ def individual_expense(request, expensename, reference):
                         user = expense.user,
                         expense = expense,
                         group = group,
+                        host = host.user.username,
                         description = description_user,
                         category = 4,
                     )
@@ -401,6 +426,7 @@ def individual_expense(request, expensename, reference):
                         user = expense.user,
                         expense = expense,
                         group = group,
+                        host = host.user.username,
                         description = description_general,
                         category = 1
                     )
@@ -431,8 +457,16 @@ def create_bundle(request, groupid, groupname):
     # group members
     members = Member.objects.filter(group = group).all()
     members_count = Member.objects.filter(group = group).count()
+    # grab the host
+    for member in members:
+        if member.status == 2:
+            host = member
     # generate a reference number
     reference = generate_number()
+    # fund the gorup host
+    for member in members:
+        if member.status == 2:
+            host = member
     # check to see if the form was submitted
     if request.method == 'POST':
         # grab the form submiited
@@ -477,6 +511,7 @@ def create_bundle(request, groupid, groupname):
                             user = member.user,
                             bundle = new_bundle,
                             group = group,
+                            host = host.user.username,
                             description = description_user,
                             category = 4,
                             reference = new_bundle.reference,
@@ -485,6 +520,7 @@ def create_bundle(request, groupid, groupname):
                             user = member.user,
                             bundle = new_bundle,
                             group = group,
+                            host = host.user.username,
                             description = description_general,
                             category = 1,
                             reference = new_bundle.reference,
@@ -527,6 +563,11 @@ def verify_expense(request, expenseid, activityid):
     expense = Expense.objects.get(id = expenseid)
     # grab the current group
     group = Group.objects.get(id = expense.group.id)
+    # grab the group members
+    members = Member.objects.filter(group = group).all()
+    for member in members:
+        if member.status == 2:
+            host = member
     # update expense from validation to specific
     expense.status = 2
     # save the change
@@ -536,13 +577,14 @@ def verify_expense(request, expenseid, activityid):
     secondid = activity.id + 1
     second = GroupActivity.objects.get(id = secondid)
     # description for the new activities
-    description_user = 'You transfered $' + str(expense.amount) + ' to host for ' + expense.description
-    description_group = user.username + ' transfered $' + str(expense.amount) + ' to host for ' + expense.description
+    description_user = 'You transfered $' + str(expense.amount) + ' to ' + host.user.username + ' for ' + expense.description
+    description_group = user.username + ' transfered $' + str(expense.amount) + ' to ' + host.user.username + ' for ' + expense.description
     # new activity that will replce the old activities
     user_activity = GroupActivity.objects.create(
         user = user,
         group = expense.group,
         expense = expense,
+        host = host.user.username,
         description = description_user,
         category = 2
     )
@@ -550,6 +592,7 @@ def verify_expense(request, expenseid, activityid):
         user = user,
         group = expense.group,
         expense = expense,
+        host = host.user.username,
         description = description_group,
         category = 1
     )
@@ -569,18 +612,27 @@ def verify_bundle(request, bundleid, activityid):
     user = request.user
     # grab the bundle
     bundle = Bundle.objects.get(id = bundleid)
+    # grab the group
+    group = Group.objects.get(id = bundle.group.id)
+    # grab the members
+    members = Member.objects.filter(group = group).all()
+    # search for host
+    for member in members:
+        if member.status == 2:
+            host = member
     # grab the current activity and the one after it - same activity
     activity = GroupActivity.objects.get(id = activityid)
     secondid = activity.id + 1
     second = GroupActivity.objects.get(id = secondid)
     # description for the new activities
-    description_user = 'You transfered $' + str(bundle.total) + ' to host for ' + bundle.name
-    description_group = user.username + ' transfered $' + str(bundle.total) + ' to host for ' + bundle.name
+    description_user = 'You transfered $' + str(bundle.total) + ' to ' + host.user.username + ' for ' + bundle.name
+    description_group = user.username + ' transfered $' + str(bundle.total) + ' to ' + host.user.username + ' for ' + bundle.name
     # new activity that will replce the old activities
     user_activity = GroupActivity.objects.create(
         user = user,
         group = bundle.group,
         bundle = bundle,
+        host = host.user.username,
         description = description_user,
         reference = bundle.reference,
         category = 2
@@ -589,6 +641,7 @@ def verify_bundle(request, bundleid, activityid):
         user = user,
         group = bundle.group,
         bundle = bundle,
+        host = host.user.username,
         description = description_group,
         reference = bundle.reference,
         category = 1
@@ -600,6 +653,91 @@ def verify_bundle(request, bundleid, activityid):
     groupname = bundle.group.name.replace(' ', '-')
     # return to the groups home page after verification
     return redirect('group_home', groupid = bundle.group.id, groupname = groupname)
+
+# ensure someone is logged in
+@login_required
+# switch default Host
+def set_host(request, groupid, memberid):
+    # grab the logged in user
+    user = request.user
+    # grab the group
+    group = Group.objects.get(id = groupid)
+    # grab the mebers
+    members = Member.objects.filter(group = group).all()
+    # find the host
+    for member in members:
+        if member.status == 2:
+            host = member
+    # check to make sure host is logged in
+    if host.user == user:
+        # find the newly set host
+        newhost = Member.objects.get(id = memberid)
+        # upate old host as member
+        old_host = host
+        old_host.status = 1
+        old_host.save()
+        # update member as the new host
+        new_host = newhost
+        new_host.status = 2
+        new_host.save()
+        # create an update record
+        description_group = newhost.user.username + ' is the new group host'
+        # updated activity for new host
+        group_activity = GroupActivity.objects.create(
+            user = newhost.user,
+            group = group,
+            host = newhost.user.username,
+            description = description_group,
+            category = 1
+        )
+        # go back to group home
+        groupname = group.name.replace(' ', '-')
+        # return to the groups home page after verification
+        return redirect('group_home', groupid = group.id, groupname = groupname)
+
+# ensure someone is logged in
+@login_required
+# leave a group
+def leave_group(request, groupid):
+    # grab the logged in user
+    user = request.user
+    # grab the current group
+    group = Group.objects.get(id = groupid)
+    # users activities
+    activity = GroupActivity.objects.filter(user = user).filter(group=group).filter(category=4).first()
+    # current member
+    user_member = Member.objects.filter(user = user).filter(group = group).first()
+    # grab the goroups members
+    members = Member.objects.filter(group = group).all()
+    # find the host
+    for member in members:
+        if member.status == 2:
+            host = member
+    # make sure user is not the host
+    if host.user == user:
+        print('you are the host')
+        # go back to group home
+        groupname = group.name.replace(' ', '-')
+        return redirect('group_home', groupid = group.id, groupname = groupname)
+    # make sure there are not expenses remaining
+    if activity:
+        print('you have unpaid expenses')
+        # go back to group home
+        groupname = group.name.replace(' ', '-')
+        return redirect('group_home', groupid = group.id, groupname = groupname)
+    # delete the member
+    delete_member = user_member
+    delete_member.delete()
+    # update record
+    description = user.username + ' has left the group'
+    new_activity = GroupActivity.objects.create(
+        user = host.user,
+        group = group,
+        host = host.user.username,
+        description = description,
+        category = 1,
+    )
+    return redirect('groups')
 
 # split an amount by number
 def split_even(amount, count):

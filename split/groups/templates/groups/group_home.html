@@ -6,7 +6,14 @@
   <p>{{ group.location }}</p>
   <p>{{ group.description }}</p>
   {% for member in members %}
-    <p>{{ member.user.username }}</p>
+    <p>
+      {{ member.user.username }}
+      {% if host.user == user %}
+        {% if host.user != member.user %}
+          <a href="{% url 'set_host' member.group.id member.id %}">Switch Host</a>
+        {% endif %}
+      {% endif %}
+    </p>
   {% endfor %}
 
   <h3>Activities</h3>
@@ -40,7 +47,12 @@
       {% endif %}
     {% endif %}
   {% endfor %}
+  {% if host.user == user %}
+     <p><a href="{% url 'create_expense' group.id group.name|slugify %}">create expense</a></p>
+     <p><a href="{% url 'create_bundle' group.id group.name|slugify %}"> create bundle</a></p>
+  {% endif %}
+  {% if host.user != user %}
+    <p><a href="{% url 'leave_group' group.id %}">Leave</a></p>
+  {% endif %}
 
-   <p><a href="{% url 'create_expense' group.id group.name|slugify %}">create expense</a></p>
-   <p><a href="{% url 'create_bundle' group.id group.name|slugify %}"> create bundle</a></p>
 {% endblock %}
