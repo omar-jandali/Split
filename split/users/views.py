@@ -80,6 +80,13 @@ def user_signup(request):
                     password = secure_password,
                     email = email,
                 )
+                # new activity description
+                description = 'Welcome ' + user.username + ' to your new Split Account'
+                # new activity object to store in database
+                activity = UserActivity.objects.create(
+                    user = user,
+                    description = description,
+                )
                 # login the user that was just created
                 login(request, user)
                 return redirect('profile')
@@ -173,7 +180,7 @@ def profile(request):
 # verify users information
 def verify_personal(request):
     # grab the logged in user
-    User = request.user
+    user = request.user
     # check to see if form was submitted
     if request.method == 'POST':
         # grab the submitted form
@@ -190,7 +197,7 @@ def verify_personal(request):
             state = cd['state']
             zip_code = cd['zip_code']
             # grab the users existing Profile
-            profile = Profile.objects.get(user = User)
+            profile = Profile.objects.get(user = user)
             # update profile object
             update_profile = profile
             update_profile.dba = dba
@@ -199,6 +206,13 @@ def verify_personal(request):
             update_profile.city = city
             update_profile.zip_code = zip_code
             update_profile.save()
+            # new activity description
+            description = ' Finished setup and verification of your personal account '
+            # creating a new activity object
+            activity = UserActivity(
+                user = user,
+                description = description,
+            )
             # redirect to users home page
             return redirect('groups')
         else:
@@ -245,6 +259,13 @@ def verify_business(request):
             update_profile.city = city
             update_profile.zip_code = zip_code
             update_profile.save()
+            # new activity description
+            description = ' Finished setup and verification of your business account '
+            # creating a new activity object
+            activity = UserActivity(
+                user = user,
+                description = description,
+            )
             # redirect to users home page
             return redirect('groups')
         else:
@@ -274,12 +295,15 @@ def user_home(request):
     friender = Friend.objects.filter(user = user.username).all()
     friended = Friend.objects.filter(friend = user).all()
     friends = friender | friended
+    # list of users actiivties
+    activities = UserActivity.objects.filter(user = user).all()
     # parameters to pass to html template
     parameters = {
         'user':user,
         'profile':profile,
         'requests':requests,
-        'friends':friends
+        'friends':friends,
+        'activities':activities
     }
     # first template
     return render(request, 'users/home.html', parameters)
@@ -329,8 +353,10 @@ def user_profile(request, username):
 # send requests between two users
 def send_request(request, username):
     # grab the current user logged in
+    # person sending the request
     requester = request.user
     # grab the user that was passed in the url
+    # person receiving the request
     requested = User.objects.filter(username = username).first()
     # validate the user that was passed through
     if requested == None:
@@ -341,6 +367,14 @@ def send_request(request, username):
         new_request = Request.objects.create(
             user = requester.username,
             requested = requested,
+        )
+        # request activity description
+        description = requester.username + ' has sent you a friend request '
+        # the activity object
+        activity = UserActivity.objects.create(
+            user = requested,
+            description = description,
+            category = 2
         )
         # return home
         return redirect('home')
@@ -361,6 +395,20 @@ def accept_request(request, username):
         new_friend = Friend.objects.create(
             user = user.username,
             friend = accepted
+        )
+        # description for person who accepted the request
+        description =  ' You and ' + accepted.username + ' are now friends'
+        # the activity object
+        activity = UserActivity.objects.create(
+            user = user,
+            description = description
+        )
+        # description for user who had his request accepted
+        description = ' You and ' + user.username + ' are now friends '
+        # the activity object
+        activity = UserActivity.objects.create(
+            user = accepted,
+            description = description
         )
         # delete the request that was sent
         request.delete()

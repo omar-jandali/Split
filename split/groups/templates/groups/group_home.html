@@ -8,16 +8,29 @@
   {% for member in members %}
     <p>{{ member.user.username }}</p>
   {% endfor %}
-  {% for expense in expenses %}
-    <p>{{ expense.user.username }} - {{ expense.location }} - {{ expense.description }} - {{ expense.amount }}</p>
-  {% endfor %}
-  {% for bundle in bundles %}
-    <p>{{ bundle.user.username }} = {{ bundle.name }} - {{ bundle.total }}</p>
-    {% for item in items %}
-      {% if item.reference == bundle.reference %}
-        <p>{{ item.item }} - {{ item.amount }}</p>
+
+  <h3>Activities</h3>
+  {% for activity in activities %}
+    {% if activity.user == user %}
+      {% if activity.category == 2 %}
+        <p>Non Validation = {{ activity.description }}</p>
       {% endif %}
-    {% endfor %}
+      {% if activity.category == 4 %}
+        <p>Validation = {{ activity.description }}</p>
+        {% if activity.reference != 0 %}
+          {% for item in items %}
+            {% if item.reference == activity.reference %}
+              <p>{{ item.item }} - {{ item.amount }}</p>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {% if activity.user != user %}
+      {% if activity.category == 1 %}
+        <p>general = {{ activity.description }}</p>
+      {% endif %}
+    {% endif %}
   {% endfor %}
 
    <p><a href="{% url 'create_expense' group.id group.name|slugify %}">create expense</a></p>

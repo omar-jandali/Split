@@ -16,6 +16,10 @@
   <p>{{profile.lob}}</p>
   <p>{{profile.street}}</p>
   <p>{{profile.city}}, {{profile.state}} {{profile.zip_code}}</p>
+  <h3>Activities</h3>
+  {% for activity in activities %}
+    <P>{{ activity.description }}</P>
+  {% endfor %}
   <h3>Requests</h3>
   {% for request in requests %}
     <p>

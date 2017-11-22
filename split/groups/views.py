@@ -52,6 +52,8 @@ def group_home(request, groupid, groupname):
     bundles = Bundle.objects.filter(group = group).all()
     # list of budle items
     items = Item.objects.filter(group = group).all()
+    # a list of all the acitivities
+    activities = GroupActivity.objects.filter(group = group).all()
     # everything passed to html template
     parameters = {
         'name':name,
@@ -60,6 +62,7 @@ def group_home(request, groupid, groupname):
         'expenses':expenses,
         'bundles':bundles,
         'items':items,
+        'activities':activities,
     }
     return render(request, 'groups/group_home.html', parameters)
 
@@ -98,6 +101,30 @@ def create_group(request):
                 group = new_group,
                 status = 2,
             )
+            # description for creating a new group - user activity
+            description = 'You created a new group : ' + name
+            # this is a new user activity
+            activity = UserActivity.objects.create(
+                user = user,
+                description = description,
+                category = 1
+            )
+            # same description for the group
+            group_description_user = 'You created ' + name
+            group_description_general = user.username + ' created ' + name
+            # activites for creating the group:
+            group_user = GroupActivity.objects.create(
+                user = user,
+                group = new_group,
+                description = group_description_user,
+                category = 2,
+            )
+            group_general = GroupActivity.objects.create(
+                user = user,
+                group = new_group,
+                description = group_description_general,
+                category = 1
+            )
             # add selected friends as members
             # go through all friends
             for friend in friends:
@@ -113,6 +140,22 @@ def create_group(request):
                             group = new_group,
                             status = 1,
                         )
+                        # the descriptions for the added members
+                        description_user = user.username + ' has added you to ' + name
+                        description_general = user.username + ' has added ' + selected.username + ' to ' + name
+                        # the following are the new activities that are created for the added member
+                        user_activity = GroupActivity.objects.create(
+                            user = selected,
+                            group = new_group,
+                            description = description_user,
+                            category = 2,
+                        )
+                        general_activity = GroupActivity.objects.create(
+                            user = selected,
+                            group = new_group,
+                            description = description_general,
+                            category = 1,
+                        )
                 # chekc friend
                 if friend.friend == user:
                     # grab the user object of the friend
@@ -124,6 +167,22 @@ def create_group(request):
                             user = selected,
                             group = new_group,
                             status = 1,
+                        )
+                        # the descriptions for the added members
+                        description_user = user.username + ' has added you to ' + name
+                        description_general = user.username + ' has added ' + selected.username + ' to ' + name
+                        # the following are the new activities that are created for the added member
+                        user_activity = GroupActivity.objects.create(
+                            user = selected,
+                            group = new_group,
+                            description = description_user,
+                            category = 2,
+                        )
+                        general_activity = GroupActivity.objects.create(
+                            user = selected,
+                            group = new_group,
+                            description = description_general,
+                            category = 1,
                         )
             # redirect to the groups home page
             return redirect('groups')
@@ -241,6 +300,23 @@ def even_expense(request, expensename, reference):
         update_expense.amount = total
         # svae the updated expense
         update_expense.save()
+        # descriptions for the new expense
+        if expense.user != user:
+            description_user = 'You owe ' + user.username + ' $' + str(total) + ' for ' + expense.description
+            description_general = expense.user.username + ' owes ' + user.username + ' $' + str(total) + ' for ' + expense.description
+            # the following are the two new activities for new expenses
+            user_activity = GroupActivity.objects.create(
+                user = expense.user,
+                group = group,
+                description = description_user,
+                category = 4,
+            )
+            general_activity = GroupActivity.objects.create(
+                user = expense.user,
+                group = group,
+                description = description_general,
+                category = 1,
+            )
     # slugify group name
     groupname = group.name.replace(' ', '-')
     # redirect
@@ -307,6 +383,23 @@ def individual_expense(request, expensename, reference):
                 # save the current expense
                 update_expense.save()
                 # increment the count
+                # descriptions for the new expense
+                if update_expense.user != user:
+                    description_user = 'You owe ' + user.username + ' $' + str(total_amount) + ' for ' + expense.description
+                    description_general = expense.user.username + ' owes ' + user.username + ' $' + str(total_amount) + ' for ' + expense.description
+                    # the following are the two new activities for new expenses
+                    user_activity = GroupActivity.objects.create(
+                        user = expense.user,
+                        group = group,
+                        description = description_user,
+                        category = 4,
+                    )
+                    general_activity = GroupActivity.objects.create(
+                        user = expense.user,
+                        group = group,
+                        description = description_general,
+                        category = 1
+                    )
                 count = count + 1
         # slugify group name
         groupname = group.name.replace(' ', '-')
@@ -370,6 +463,29 @@ def create_bundle(request, groupid, groupname):
                         reference = reference,
                         total = total
                     )
+                    # only create activities for those who are not the host
+                    if member.user != user:
+                        # descriptions for the new expense
+                        description_user = 'You owe ' + user.username + ' $' + str(total) + ' for ' + new_bundle.name
+                        description_general = member.user.username + ' owe ' + user.username + ' $' + str(total) + ' for ' + new_bundle.name
+                        # the following are the two new activities for new expenses
+                        user_activity = GroupActivity.objects.create(
+                            user = member.user,
+                            bundle = new_bundle,
+                            group = group,
+                            description = description_user,
+                            category = 4,
+                            reference = new_bundle.reference,
+                        )
+                        general_activity = GroupActivity.objects.create(
+                            user = member.user,
+                            bundle = new_bundle,
+                            group = group,
+                            description = description_general,
+                            category = 1,
+                            reference = new_bundle.reference,
+                        )
+            # create a bundle item pbject to store in database
             new_item = Item.objects.create(
                 group = group,
                 item = item1,

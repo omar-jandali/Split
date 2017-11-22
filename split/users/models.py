@@ -4,6 +4,9 @@ from django.contrib.auth.models import User, UserManager
 # importing of specific fields for formatting
 from localflavor.us.models import USStateField, PhoneNumberField, USZipCodeField
 
+# import modesl from other apps
+from groups.models import *
+
 # the following is the users profile model
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # server
@@ -32,4 +35,16 @@ class Request(models.Model):
 class Friend(models.Model):
     user = models.CharField(max_length=22, default='current user')
     friend = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    created = models.DateTimeField(auto_now_add=True)
+
+class UserActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.CharField(max_length=150, null=True)
+    expense = models.ForeignKey(Expense, null=True, on_delete=models.CASCADE)
+    description = models.CharField(max_length=200, default='some action')
+    reference = models.IntegerField(default = '101', null = True)
+    category = models.IntegerField(default=1)
+    status = models.SmallIntegerField(default=1)
+    # 1 = unseen
+    # 2 = seen
     created = models.DateTimeField(auto_now_add=True)
