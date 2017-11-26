@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'localflavor',
     'groups',
+    'accounts',
 ]
 
 MIDDLEWARE = [

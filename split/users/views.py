@@ -13,6 +13,8 @@ from .models import *
 
 #import all references from other apps
 from groups.models import *
+from groups.views import *
+from accounts.views import *
 
 # the users login  view
 def user_login(request):
@@ -154,6 +156,7 @@ def profile(request):
                 bio = bio,
                 gender = gender,
                 phone = phone,
+                business = account,
             )
             # redirect user to verify based on account type
             if account == 'INDIVIDUAL':
@@ -206,6 +209,8 @@ def verify_personal(request):
             update_profile.city = city
             update_profile.zip_code = zip_code
             update_profile.save()
+            # create synapse user
+            create_user_synapse(request)
             # new activity description
             description = ' Finished setup and verification of your personal account '
             # creating a new activity object

@@ -1,0 +1,6 @@
+<p>accounts home</p>
+<p><a href="{% url 'link_login' %}">link login</a></p>
+<p><a href="{% url 'link_routing' %}">link Routing</a></p>
+ {% for account in accounts %}
+    <p>{{ account.name }}</p>
+ {% endfor %}

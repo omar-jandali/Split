@@ -22,6 +22,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=5, default='Other')
     lob = models.CharField(max_length=40, default='occupation')
     dba = models.CharField(max_length=40, default='comapny')
+    business = models.CharField(max_length=20, default='INDIVIDUAL')
     synapse_id = models.CharField(max_length=200, default='123456789')
     created = models.DateTimeField(auto_now_add=True)  # server
 
