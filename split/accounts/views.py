@@ -1,3 +1,4 @@
+# standard imports
 from users.models import Profile
 from general.views import *
 from .forms import *
@@ -32,7 +33,7 @@ client = Client(**args)
 def accounts(request):
     user = request.user
     profile = Profile.objects.get(user = user)
-    accounts = SynapseAccounts.objects.filter(user = user).all()
+    accounts = Accounts.objects.filter(user = user).all()
     parameters = {
         'accounts':accounts,
     }
@@ -78,43 +79,64 @@ def create_user_synapse(request):
 @login_required
 # link an account with synapse
 def link_login(request):
+    # grab the logged in user
     user = request.user
+    # grab the users profile
     profile = Profile.objects.get(user = user)
+    # grab the users synpase id
     user_id = profile.synapse_id
+    # send a request to retreive the users synapse account
     synapseUser = SynapseUser.by_id(client, str(user_id))
+    # check to see if form was submitted
     if request.method == 'POST':
+        # set the testing information
         bank_id = 'synapse_good'
         bank_pw = 'test1234'
         bank_code = 'fake'
+        # pass all of the arguments for the request
         args = {
             'bank_name':bank_code,
             'username':bank_id,
             'password':bank_pw,
         }
+        # submit the request to link an account through login
         ach_us = AchUsNode.create_via_bank_login(synapseUser, **args)
+        # check to see if it needs verification
         verification = ach_us.mfa_verified
+        # if it needs verification - verify
         if verification == False:
+            # the following is for all the required verification
             ach_us.mfa_message
             nodes = ach_us.answer_mfa('test_answer')
             ach_us.mfa_verified
+        # grab the linked accounts and save locally
         local_accounts(request)
         return redirect('accounts')
     else:
+        # the form to be submiited by the user
         form = LinkLoginForm()
+        # all of the parameters for the html template
         parameters = {
             'form':form,
         }
-    return render(request, 'accounts/link_login.html', parameters)
+        # render the html template
+        return render(request, 'accounts/link_login.html', parameters)
 
 # ensure someone i slogged in
 @login_required
 # link an account with synapse
 def link_routing(request):
+    # grab the logged in user
     user = request.user
+    # grab the users profiel
     profile = Profile.objects.get(user = user)
+    # grab the users synapse account from database
     user_id = profile.synapse_id
+    # send a request to retreice the users synapse record
     synapseUser = SynapseUser.by_id(client, str(user_id))
+    # check to see if the form was submitted
     if request.method == 'POST':
+        # the following are all of the defauly testing linking account info
         required = {
             'nickname': 'Fake Account',
             'account_number': '1232225674134',
@@ -122,38 +144,58 @@ def link_routing(request):
             'account_type': 'PERSONAL',
             'account_class': 'CHECKING'
         }
+        # the following is the request that links the account
+        # through routing and account number
         account = AchUsNode.create(synapseUser, **required)
+        # saves the new linked accounts locally
         local_accounts(request)
         return redirect('accounts')
     else:
+        # the from to be submiited
         form = LinkRoutingForm()
+        # the parameters that need to be passed to the html tempalte
         parameters = {
             'form':form,
         }
-    return render(request, 'accounts/link_routing.html', parameters)
+        # render the html template
+        return render(request, 'accounts/link_routing.html', parameters)
 
+# ensure someone is logged in
 @login_required
+# save account info locally
 def local_accounts(request):
+    # grab the logged in user
     user = request.user
+    # grab the logged in users profile
     profile = Profile.objects.get(user = user)
+    # grab the users synapse id from the database
     user_id = profile.synapse_id
+    # grab the users synapse account
     synapseUser = SynapseUser.by_id(client, str(user_id))
+    # set the options for retreiving the users accout
     options = {
         'page':1,
         'per_page':20,
         'type': 'ACH-US',
     }
+    # list of all the users nodes from linked accounts
     nodes = Node.all(synapseUser, **options)
+    # cycle through the nodes
     for node in nodes:
+        # set the node to json format
         node_json = node.json
+        # set all of the different values from the nodes
         node_id = node_json['_id']
         node_name = node_json['info']['nickname']
         node_class = node_json['info']['class']
         node_bank_name = node_json['info']['bank_name']
         node_balance = node_json['info']['balance']['amount']
         node_currency = node_json['info']['balance']['currency']
+        # check to see if if the account you connected is already saved
         account = Accounts.objects.filter(user = user).filter(account_id = node_id).first()
+        # if the account doesnt exist, create an account
         if account == None:
+            # create a new synapse account object saved locally
             new_accout = SynapseAccounts.objects.create(
                 user = user,
                 name = node_name,
@@ -163,8 +205,11 @@ def local_accounts(request):
                 balance = node_balance,
                 main = 1
             )
+        # grab the account that is saved
         if account:
+            # grab the amount that is stored with the balance
             if account.balance != node_balance:
+                # update the balance based on the balance of your bank account though synapse
                 update_account = account
                 update_account.balance = node_balance
                 update_account.save()

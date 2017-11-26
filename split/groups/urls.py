@@ -8,6 +8,8 @@ urlpatterns = [
         views.leave_group, name='leave_group'),
     url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/$',
         views.group_home, name='group_home'),
+    url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/info/$',
+        views.group_info, name='group_info'),
     url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/create_expense/$',
         views.create_expense, name='create_expense'),
     url(r'^(?P<groupid>[0-9]+)/(?P<groupname>[\w+-]+)/create_bundle/$',

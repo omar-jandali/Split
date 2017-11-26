@@ -1,3 +1,4 @@
+# standard import statements 
 from users.models import Profile
 from general.views import *
 from .models import *
@@ -56,6 +57,18 @@ def group_home(request, groupid, groupname):
         'host':host
     }
     return render(request, 'groups/group_home.html', parameters)
+
+@login_required
+def group_info(request, groupid, groupname):
+    user = request.user
+    profile = Profile.objects.get(user = user)
+    group = Group.objects.get(id = groupid)
+    members = Member.objects.filter(group = group).all()
+    parameters = {
+        'group':group,
+        'members':members
+    }
+    return render(request, 'groups/group_info.html', parameters)
 
 # ensure someone is logged in
 @login_required

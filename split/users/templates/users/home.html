@@ -1,22 +1,6 @@
-{% extends "general/base.html" %}
+{% extends "general/header.html" %}
 
-{% block standard %}
-  <form action="{% url 'searched' %}" method="POST">
-    {% csrf_token %}
-    <input type="text" name="searched" placeholder="Search">
-  </form>
-  <h3><a href="{% url 'groups' %}">Groups</a></h3>
-  <h3><a href="{% url 'accounts' %}">Accounts</a></h3>
-  <p>{{ user.username }}</p>
-  <p>{{ user.email }}</p>
-  <p>{{profile.f_name}} - {{profile.l_name}}</p>
-  <p>{{profile.bio}}</p>
-  <p>{{profile.gender}}</p>
-  <p>{{profile.phone}}</p>
-  <p>{{profile.dba}}</p>
-  <p>{{profile.lob}}</p>
-  <p>{{profile.street}}</p>
-  <p>{{profile.city}}, {{profile.state}} {{profile.zip_code}}</p>
+{% block content %}
   <h3>Activities</h3>
   {% for activity in activities %}
     <P>{{ activity.description }}</P>

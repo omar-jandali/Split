@@ -1,6 +1,10 @@
-<p>accounts home</p>
-<p><a href="{% url 'link_login' %}">link login</a></p>
-<p><a href="{% url 'link_routing' %}">link Routing</a></p>
- {% for account in accounts %}
-    <p>{{ account.name }}</p>
- {% endfor %}
+{% extends "general/header.html" %}
+
+{% block content %}
+  <h2>Accounts</h2>
+  <p><a href="{% url 'link_login' %}">link login</a></p>
+  <p><a href="{% url 'link_routing' %}">link Routing</a></p>
+   {% for account in accounts %}
+      <p>{{ account.name }}</p>
+   {% endfor %}
+ {% endblock %}

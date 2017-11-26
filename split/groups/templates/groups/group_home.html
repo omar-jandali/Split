@@ -1,20 +1,9 @@
-{% extends "general/base.html" %}
+{% extends "general/header.html" %}
 
-{% block standard %}
-  <p>group home page</p>
-  <p>{{ name }}</p>
-  <p>{{ group.location }}</p>
-  <p>{{ group.description }}</p>
-  {% for member in members %}
-    <p>
-      {{ member.user.username }}
-      {% if host.user == user %}
-        {% if host.user != member.user %}
-          <a href="{% url 'set_host' member.group.id member.id %}">Switch Host</a>
-        {% endif %}
-      {% endif %}
-    </p>
-  {% endfor %}
+{% block content %}
+  <h2>{{ name }}
+    <a href="{% url 'group_info' group.id group.name|slugify %}">I</a>
+  </h2>
 
   <h3>Activities</h3>
   {% for activity in activities %}
