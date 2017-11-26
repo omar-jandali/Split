@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views, method
+from . import views
 
 urlpatterns = [
     url(r'^$', views.user_home, name='home'),
@@ -9,7 +9,6 @@ urlpatterns = [
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^personal/$', views.verify_personal, name='personal'),
     url(r'^business/$', views.verify_business, name='business'),
-    url(r'^test/$', method.test, name='test'),
     url(r'^search/$', views.search_user, name="searched"),
     url(r'^(?P<username>[\w+]+)/$', views.user_profile, name='user_profile'),
     url(r'^(?P<username>[\w+]+)/request/$', views.send_request, name='send_request'),

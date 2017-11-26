@@ -1,20 +1,7 @@
-# sandard import statements for utility usage
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
-
-# import all references from this specific app
+from accounts.views import create_user_synapse
+from general.views import *
 from .forms import *
-from .method import *
 from .models import *
-
-#import all references from other apps
-from groups.models import *
-from groups.views import *
-from accounts.views import *
 
 # the users login  view
 def user_login(request):

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User, UserManager
 
 # Synapse Accounts locally stores a users linked accounts through login or an/rn
-class SynapseAccounts(models.Model):
+class Accounts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, default='Bank Account')
     account_id = models.CharField(max_length=100, default='00000')

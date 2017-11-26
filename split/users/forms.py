@@ -4,9 +4,8 @@ from django.forms import ModelForm, extras
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-
 from localflavor.us.forms import USStateField, USPhoneNumberField, USZipCodeField
-
+ 
 # all model imports related to this project
 from .models import *
 

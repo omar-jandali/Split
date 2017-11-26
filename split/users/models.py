@@ -1,11 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User, UserManager
-
-# importing of specific fields for formatting
 from localflavor.us.models import USStateField, PhoneNumberField, USZipCodeField
-
 # import modesl from other apps
-from groups.models import *
+from groups.models import Expense
 
 # the following is the users profile model
 class Profile(models.Model):

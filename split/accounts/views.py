@@ -1,24 +1,8 @@
-# sandard import statements for utility usage
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
-
-# import all references from this specific app
+from users.models import Profile
+from general.views import *
 from .forms import *
 from .models import *
 
-# import neccesary apps files
-from users.method import test
-from users.models import Profile
-from groups.views import generate_number
-
-# synapse import statements that are needed
-from synapse_pay_rest import Client, Node, Transaction
-from synapse_pay_rest import User as SynapseUser
-from synapse_pay_rest.models.nodes import AchUsNode
 
 # the following are all of the different credentials that are needed in order to
 # initiate the connect between the api and opentab
@@ -41,9 +25,6 @@ args = {
 # this is the call that takes the credentials and sends the connect request to
 # validate credentials
 client = Client(**args)
-
-def account_test(request):
-    return redirect('test')
 
 # ensure someone i slogged in
 @login_required
@@ -171,7 +152,7 @@ def local_accounts(request):
         node_bank_name = node_json['info']['bank_name']
         node_balance = node_json['info']['balance']['amount']
         node_currency = node_json['info']['balance']['currency']
-        account = SynapseAccounts.objects.filter(user = user).filter(account_id = node_id).first()
+        account = Accounts.objects.filter(user = user).filter(account_id = node_id).first()
         if account == None:
             new_accout = SynapseAccounts.objects.create(
                 user = user,
