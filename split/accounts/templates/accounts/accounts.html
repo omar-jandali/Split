@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Accounts</h2>
+  <p>{{ profile.synapse_id }}</p>
   <p><a href="{% url 'link_login' %}">link login</a></p>
   <p><a href="{% url 'link_routing' %}">link Routing</a></p>
    {% for account in accounts %}

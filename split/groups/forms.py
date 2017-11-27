@@ -9,7 +9,7 @@ from .models import *
 class CreateGroupForm(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ['name', 'location', 'description']
+        fields = ['name', 'description']
 
 # create a new expense form - group
 class CreateExpenseForm(forms.ModelForm):

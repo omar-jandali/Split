@@ -1,5 +1,5 @@
-# standard import statements 
-from users.models import Profile
+# standard import statements
+from users.models import Profile, Friend, UserActivity
 from general.views import *
 from .models import *
 from .forms import *
@@ -90,12 +90,10 @@ def create_group(request):
             cd = form.cleaned_data
             # grab the form informaiton
             name = cd['name']
-            location = cd['location']
             description = cd['description']
             # create a new group
             new_group = Group.objects.create(
                 name = name,
-                location = location,
                 description = description,
                 created_by = user,
             )

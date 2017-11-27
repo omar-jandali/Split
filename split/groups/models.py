@@ -5,7 +5,6 @@ from django.contrib.auth.models import User, UserManager
 class Group(models.Model):
     name = models.CharField(max_length = 25)
     description = models.CharField(max_length = 250, null=True)
-    location = models.CharField(max_length = 40, null=True)
     created_by = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -22,7 +21,7 @@ class Member(models.Model):
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
-    amount = models.DecimalField(decimal_places=2, max_digits=9, default=0)
+    amount = models.DecimalField(decimal_places=2, max_digits=9, default=0.00)
     description = models.CharField(max_length=200, default = 'expense')
     name = models.CharField(max_length=100, default = 'expense')
     location = models.CharField(max_length=100, default = 'location')

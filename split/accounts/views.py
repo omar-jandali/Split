@@ -4,6 +4,10 @@ from general.views import *
 from .forms import *
 from .models import *
 
+# synapse imports
+from synapse_pay_rest import Client, Node, Transaction
+from synapse_pay_rest import User as SynapseUser
+from synapse_pay_rest.models.nodes import AchUsNode
 
 # the following are all of the different credentials that are needed in order to
 # initiate the connect between the api and opentab
@@ -35,6 +39,7 @@ def accounts(request):
     profile = Profile.objects.get(user = user)
     accounts = Accounts.objects.filter(user = user).all()
     parameters = {
+        'profile':profile,
         'accounts':accounts,
     }
     return render(request, 'accounts/accounts.html', parameters)
@@ -71,9 +76,37 @@ def create_user_synapse(request):
     # the local database.
     if response:
         synapse_id = response['_id']
+        print(synapse_id)
         update_profile = profile
         update_profile.synapse_id = synapse_id
         update_profile.save()
+
+    # grab the users synpase id
+    user_id = profile.synapse_id
+    # send a request to retreive the users synapse account
+    synapseUser = SynapseUser.by_id(client, str(user_id))
+    options = {
+        'email': 'test@test.com',
+        'phone_number': '901.111.1111',
+        'ip': '127.0.0.1',
+        'name': legal_name,
+        'alias': 'Test',
+        'entity_type': 'M',
+        'entity_scope': 'Arts & Entertainment',
+        'day': 2,
+        'month': 5,
+        'year': 1989,
+        'address_street': '1 Market St',
+        'address_city': 'SF',
+        'address_subdivision': 'CA',
+        'address_postal_code': '94114',
+        'address_country_code': 'US'
+    }
+
+    base_document = SynapseUser.add_base_document(synapseUser, **options)
+    value = 'https://www.facebook.com/valid'
+    social_document = base_document.add_social_document(type= 'FACEBOOK', value=value)
+    virtual_document = base_document.add_virtual_document(type='SSN', value='2222')
 
 # ensure someone i slogged in
 @login_required
@@ -85,10 +118,10 @@ def link_login(request):
     profile = Profile.objects.get(user = user)
     # grab the users synpase id
     user_id = profile.synapse_id
-    # send a request to retreive the users synapse account
-    synapseUser = SynapseUser.by_id(client, str(user_id))
     # check to see if form was submitted
     if request.method == 'POST':
+        # send a request to retreive the users synapse account
+        synapseUser = SynapseUser.by_id(client, str(user_id))
         # set the testing information
         bank_id = 'synapse_good'
         bank_pw = 'test1234'
@@ -132,10 +165,10 @@ def link_routing(request):
     profile = Profile.objects.get(user = user)
     # grab the users synapse account from database
     user_id = profile.synapse_id
-    # send a request to retreice the users synapse record
-    synapseUser = SynapseUser.by_id(client, str(user_id))
     # check to see if the form was submitted
     if request.method == 'POST':
+        # send a request to retreice the users synapse record
+        synapseUser = SynapseUser.by_id(client, str(user_id))
         # the following are all of the defauly testing linking account info
         required = {
             'nickname': 'Fake Account',
@@ -196,7 +229,7 @@ def local_accounts(request):
         # if the account doesnt exist, create an account
         if account == None:
             # create a new synapse account object saved locally
-            new_accout = SynapseAccounts.objects.create(
+            new_accout = Accounts.objects.create(
                 user = user,
                 name = node_name,
                 account_id = node_id,

@@ -9,10 +9,6 @@ from django.contrib.auth.decorators import login_required
 from random import randint
 from decimal import Decimal
 
-from synapse_pay_rest import Client, Node, Transaction
-from synapse_pay_rest import User as SynapseUser
-from synapse_pay_rest.models.nodes import AchUsNode
-
 def test(request):
     return render(request, 'users/test.html')
 

@@ -1,3 +1,4 @@
 Django==1.11.5
 gunicorn==19.7
 django-localflavor==1.5.3
+synapse_pay_rest_native==3.1

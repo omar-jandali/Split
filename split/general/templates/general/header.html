@@ -3,11 +3,11 @@
 
 {% block standard %}
 <div class="row solid-borders">
-  <div class=" col-md-1 border-padding">
+  <div class=" col-md-4 border-padding">
     <img src="{% static 'images/yap-logo-possible-1.png'%}" class="header-icon-size" alt="">
     <h3 class="border-margin-top" style="display:inline;">  {{ user.username }}</h3>
   </div>
-  <div class="col-md-3">
+  <div class="">
   </div>
   <div class="col-md-2 align-center-item align-center-v">
     <form action="{% url 'searched' %}" method="POST">
