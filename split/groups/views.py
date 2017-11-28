@@ -1,5 +1,6 @@
 # standard import statements
 from users.models import Profile, Friend, UserActivity
+from accounts.views import create_transaction
 from general.views import *
 from .models import *
 from .forms import *
@@ -561,9 +562,12 @@ def verify_expense(request, expenseid, activityid):
     group = Group.objects.get(id = expense.group.id)
     # grab the group members
     members = Member.objects.filter(group = group).all()
+    # find the group host
     for member in members:
         if member.status == 2:
             host = member
+    # create the transaction
+    create_transaction(request, activityid)
     # update expense from validation to specific
     expense.status = 2
     # save the change
@@ -575,7 +579,7 @@ def verify_expense(request, expenseid, activityid):
     # description for the new activities
     description_user = 'You transfered $' + str(expense.amount) + ' to ' + host.user.username + ' for ' + expense.description
     description_group = user.username + ' transfered $' + str(expense.amount) + ' to ' + host.user.username + ' for ' + expense.description
-    # new activity that will replce the old activities
+    #new activity that will replce the old activities
     user_activity = GroupActivity.objects.create(
         user = user,
         group = expense.group,

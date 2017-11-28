@@ -9,11 +9,11 @@
   {% for activity in activities %}
     {% if activity.user == user %}
       {% if activity.category == 2 %}
-        <p>Non Validation = {{ activity.description }}</p>
+        <p>{{ activity.description }}</p>
       {% endif %}
       {% if activity.category == 4 %}
         <p>
-          Validation = {{ activity.description }}
+          {{ activity.description }}
           {% if activity.expense != None %}
             <a href="{% url 'verify_expense' activity.expense.id activity.id %}">Yes</a>
           {% endif %}
@@ -32,7 +32,7 @@
     {% endif %}
     {% if activity.user != user %}
       {% if activity.category == 1 %}
-        <p>general = {{ activity.description }}</p>
+        <p>{{ activity.description }}</p>
       {% endif %}
     {% endif %}
   {% endfor %}

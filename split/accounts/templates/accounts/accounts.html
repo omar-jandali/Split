@@ -6,6 +6,14 @@
   <p><a href="{% url 'link_login' %}">link login</a></p>
   <p><a href="{% url 'link_routing' %}">link Routing</a></p>
    {% for account in accounts %}
-      <p>{{ account.name }}</p>
+      <p>
+        {{ account.account_id }}{{ account.name }} -- {{ account.main }}
+        {% if account.main == 1 %}
+          <a href="{% url 'set_default' account.id %}">Set Main</a>
+        {% endif %}
+        {% if account.main == 2 %}
+          Default
+        {% endif %}
+      </p>
    {% endfor %}
  {% endblock %}

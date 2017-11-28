@@ -1,5 +1,6 @@
 # standard imports
 from users.models import Profile
+from groups.models import GroupActivity, Expense, Group, Member
 from general.views import *
 from .forms import *
 from .models import *
@@ -193,6 +194,51 @@ def link_routing(request):
         # render the html template
         return render(request, 'accounts/link_routing.html', parameters)
 
+# ensure someone is looged in
+@login_required
+# create transactions between two user accounts
+def create_transaction(request, activityid):
+    # grab the logged in user
+    user = request.user
+    # grab the users profile
+    profile = Profile.objects.get(user = user)
+    # grab the realted activity and expense
+    activity = GroupActivity.objects.get(id = activityid)
+    group = activity.group
+    expense = activity.expense
+    print(activity)
+    print(group)
+    print(expense)
+    # store the users synapse account
+    user_id = profile.synapse_id
+    synapseUser = SynapseUser.by_id(client, str(user_id))
+    print(synapseUser)
+    # grab the users default accont
+    account = Accounts.objects.filter(user = user).filter(main = 2).first()
+    node = Node.by_id(synapseUser, str(account.account_id))
+    print(node)
+    # find the groups host
+    member = Member.objects.filter(group = group).filter(status = 1).first()
+    # grab the host member
+    host = member.user
+    host_account = Accounts.objects.filter(user = host).filter(main = 2).first()
+    print(host_account)
+    # set the transaction inforaiton
+    args = {
+        'to_type': 'ACH-US',
+        'to_id': str(host_account.account_id),
+        'amount': str(expense.amount),
+        'currency': 'USD',
+        'ip': '127.0.0.1',
+        'same_day': True,
+        'note': 'hi synapse',
+        'supp_id': 'ABC123',
+    }
+    print(args)
+    # create the transaction request
+    transaction = Transaction.create(node, **args)
+    print(transaction)
+
 # ensure someone is logged in
 @login_required
 # save account info locally
@@ -246,3 +292,39 @@ def local_accounts(request):
                 update_account = account
                 update_account.balance = node_balance
                 update_account.save()
+
+# ensure someone is logged in
+@login_required
+# set defauly account
+def set_default(request, accountid):
+    # grab the logged in user
+    user = request.user
+    # grab the selected account
+    selected = Accounts.objects.filter(id = accountid).filter(user = user).first()
+    if selected == None:
+        return redirect('accounts')
+    # grab the already set main account
+    main = Accounts.objects.filter(user = user).filter(main = 2).first()
+    # check if there is already a main
+    print(selected)
+    print(main)
+    if main == None:
+        # set the selected account as main
+        print('setting main')
+        update_account = selected
+        update_account.main = 2
+        print('main is set')
+        update_account.save()
+        print('main is saved ')
+        return redirect('accounts')
+    # check if the main exists
+    if main:
+        # grab the old main account and set a regular account
+        old_main = main
+        old_main.main == 1
+        old_main.save()
+        # grab the new main and set it as main
+        new_main = selected
+        new_main.main == 2
+        new_main.save()
+        return redirect('accounts')

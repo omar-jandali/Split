@@ -2,8 +2,8 @@
   background-color: white !important;
 }
 
-.content-backgroun {
-  background-color: white !important;
+.content-background {
+  background-color: lightblue !important;
 }
 
 .no-padding {
@@ -13,6 +13,13 @@
 
 .border-padding {
   padding: 8px !important;
+}
+
+.padding-center {
+  padding-left: auto !important;
+  padding-right: auto !important;
+  padding-top: auto !important;
+  padding-bottom: auto !important;
 }
 
 .border-margin-top {
@@ -98,4 +105,8 @@
 .content-max-height {
   height: 90vh !important;
   overflow-y: hidden !important;
+}
+
+.text-24{
+  text
 }

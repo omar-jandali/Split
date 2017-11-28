@@ -1,6 +1,7 @@
 {% extends "general/header.html" %}
 
 {% block content %}
+
   <h3>Activities</h3>
   {% for activity in activities %}
     <P>{{ activity.description }}</P>
@@ -24,4 +25,38 @@
   {% endfor %}
 
   <p><a href="{% url 'logout' %}">Logout</a></p>
+
 {% endblock %}
+
+<div class="row solid-borders border-padding">
+  <div class="col-md-3 no-padding align-center-item">
+    <img src="http://via.placeholder.com/110x110">
+  </div>
+  <div class="col-md-9 backgrounded border-margin-top">
+    <div class="row">
+      <p class="col-md-10">
+        {{user.username}}
+      </p>
+      <img class="align-center-item" src="http://via.placeholder.com/36x36">
+    </div>
+    <div class="row">
+      <p class="col-md-12">
+        {{profile.f_name}} {{profile.l_name}}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-md-12">
+        {{profile.bio}}
+      </p>
+    </div>
+  </div>
+</div>
+{% if request in requests %}
+<div>
+
+</div>
+{% endif %}
+
+<div class="row">
+  <p>activity</p>
+</div>
