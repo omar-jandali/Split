@@ -7,6 +7,6 @@
   {% for member in members %}
     <p>{{ member.user.username }}</p>
   {% endfor %}
-  <p><a href="">Add Members</a></p>
+  <p><a href="{% url 'add_members' group.id group.name|slugify %}">Add Members</a></p>
 
 {% endblock %}

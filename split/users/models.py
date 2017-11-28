@@ -39,6 +39,7 @@ class UserActivity(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     account = models.CharField(max_length=150, null=True)
     expense = models.ForeignKey(Expense, null=True, on_delete=models.CASCADE)
+    request = models.ForeignKey(Request, null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=200, default='some action')
     reference = models.IntegerField(default = '101', null = True)
     category = models.IntegerField(default=1)

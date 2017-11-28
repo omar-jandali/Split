@@ -205,6 +205,35 @@ def create_group(request):
 
 # ensure someone is logged in
 @login_required
+# add members to a group
+def add_members(request, groupid, groupname):
+    # grab the logged in user
+    user = request.user
+    # grab the selected group
+    group = Group.objects.get(id = groupid)
+    # grab the group members
+    members = Member.objects.filter(group = group).all()
+    # grab all of the friends fo the logged in user
+    friender = Friend.objects.filter(user = user.username).all()
+    friended = Friend.objects.filter(friend = user).all()
+    friends = friender | friended
+    # check if form was submitted
+    if request.method == "POST":
+        cheese = 'cheese'
+    else:
+        # form message
+        message = 'Select new members to add'
+        # the required parameters for this form
+        parameters = {
+            'friends':friends,
+            'members':members,
+            'group':group,
+            'message':message,
+        }
+        return render(request, 'groups/add_members.html', parameters)
+
+# ensure someone is logged in
+@login_required
 # create an expense
 def create_expense(request, groupid, groupname):
     # grab the user that is logged in

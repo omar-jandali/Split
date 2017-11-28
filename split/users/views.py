@@ -367,7 +367,16 @@ def send_request(request, username):
         activity = UserActivity.objects.create(
             user = requested,
             description = description,
+            request = new_request,
             category = 2
+        )
+        # activity for the sender of the friend request
+        description_user = 'You have sent ' + requested.username + ' a friend request'
+        # activity creation
+        activity = UserActivity.objects.create(
+            user = requester,
+            description = description_user,
+            category = 2,
         )
         # return home
         return redirect('home')
