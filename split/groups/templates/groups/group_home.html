@@ -1,8 +1,8 @@
 {% extends "general/header.html" %}
 
 {% block content %}
-  <h2>{{ name }}
-    <a href="{% url 'group_info' group.id group.name|slugify %}">I</a>
+  <h2>
+    <a href="{% url 'group_info' group.id group.name|slugify %}">{{ name }}</a>
   </h2>
 
   <h3>Activities</h3>

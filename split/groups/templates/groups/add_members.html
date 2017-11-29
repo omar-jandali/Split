@@ -4,28 +4,22 @@
     <h1>Create Group</h1>
     <p>{{ message }}</p>
     <form method="POST">
-        {% csrf_token %}
-        {% for friend in friends %}
-          {% for member in members %}
-            {% if member.user.username != friend.friend.username %}
-              {% if member.user.username != friend.user %}
-                {% if friend.user == user.username %}
-                  <p>
-                    {{ friend.friend.username }}
-                    <input type="checkbox" name="{{friend.friend.username}}" value="{{friend.friend.username}}">
-                  </p>
-                {% endif %}
-                {% if friend.friend == user %}
-                  <p>
-                    {{ friend.user }}
-                    <input type="checkbox" name="{{friend.user}}" value="{{friend.user}}">
-                  </p>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        <input type="submit" name="submit" value="submit">
+      {% csrf_token %}
+      {% for friend in friends %}
+        {% if friend.friend.username not in members %}
+          <p>
+            {{ friend.friend.username }}
+            <input type="checkbox" name="{{friend.friend.username}}" value="{{ friend.friend.username }}">
+          </p>
+        {% endif %}
+        {% if friend.user not in members %}
+          <p>
+            {{ friend.user }}
+            <input type="checkbox" name="{{friend.user}}" value="{{ friend.user }}">
+          </p>
+        {% endif %}
+    {% endfor %}
+    <input type="submit" name="submit" value="submit">
     </form>
 
 {% endblock %}

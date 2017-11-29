@@ -212,14 +212,75 @@ def add_members(request, groupid, groupname):
     # grab the selected group
     group = Group.objects.get(id = groupid)
     # grab the group members
-    members = Member.objects.filter(group = group).all()
+    members = [member.user.username for member in Member.objects.filter(group = group)]
     # grab all of the friends fo the logged in user
     friender = Friend.objects.filter(user = user.username).all()
     friended = Friend.objects.filter(friend = user).all()
     friends = friender | friended
     # check if form was submitted
     if request.method == "POST":
-        cheese = 'cheese'
+        for friend in friends:
+            # check friend
+            if friend.user == user.username:
+                # grab the friend object
+                selected = friend.friend
+                # check for selected in form
+                if selected.username in request.POST:
+                    # create a new member object
+                    new_member = Member.objects.create(
+                        user = selected,
+                        group = group,
+                        status = 1,
+                    )
+                    # the descriptions for the added members
+                    description_user = user.username + ' has added you to ' + group.name
+                    description_general = user.username + ' has added ' + selected.username + ' to ' + group.name
+                    # the following are the new activities that are created for the added member
+                    user_activity = GroupActivity.objects.create(
+                        user = selected,
+                        group = group,
+                        description = description_user,
+                        category = 2,
+                    )
+                    general_activity = GroupActivity.objects.create(
+                        user = selected,
+                        group = group,
+                        description = description_general,
+                        category = 1,
+                    )
+            # chekc friend
+            if friend.friend == user:
+                # grab the user object of the friend
+                selected = User.objects.get(username = friend.user)
+                # validate of the friend was selected
+                if selected.username in request.POST:
+                    # create a new member objects
+                    new_member = Member.objects.create(
+                        user = selected,
+                        group = group,
+                        status = 1,
+                    )
+                    # the descriptions for the added members
+                    description_user = user.username + ' has added you to ' + group.name
+                    description_general = user.username + ' has added ' + selected.username + ' to ' + group.name
+                    # the following are the new activities that are created for the added member
+                    user_activity = GroupActivity.objects.create(
+                        user = selected,
+                        group = group,
+                        description = description_user,
+                        category = 2,
+                    )
+                    general_activity = GroupActivity.objects.create(
+                        user = selected,
+                        group = group,
+                        description = description_general,
+                        category = 1,
+                    )
+        # slugify group name
+        groupname = group.name.replace(' ', '-')
+        # redirect
+        return redirect('group_home', groupid=group.id, groupname=groupname)
+
     else:
         # form message
         message = 'Select new members to add'
