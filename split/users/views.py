@@ -440,6 +440,182 @@ def decline_request(request, username):
         # if not valid, return the user to the test page
         return redirect('test')
 
+#ensure someone is logged in
+@login_required
+# edit a users settings
+def update_profile(request):
+    # grab the logged in user
+    user = request.user
+    # grab the users profile
+    profile = Profile.objects.get(user = user)
+    # commented during initial testing because of dumplcate objects
+    privacy = Privacy.objects.filter(user = user).first()
+    passwordMessage = ''
+    # check to see if the form is submitted
+    if request.method == "POST":
+        # check if the user updated his info
+        if 'userSubmit' in request.POST:
+            # grab the first user form after submission
+            updateUserOne = AccountUpdateForm(request.POST)
+            # check for validation
+            if updateUserOne.is_valid():
+                # clean the data
+                cd = updateUserOne.cleaned_data
+                # grab thee content
+                username = cd['username']
+                email = cd['email']
+            # grab the second user form after submission
+            updateUserTwo = UserUpdateForm(request.POST)
+            # check the validation
+            if updateUserTwo.is_valid():
+                # clean the data
+                cd = updateUserTwo.cleaned_data
+                # grab the content
+                first_name = cd['first_name']
+                last_name = cd['last_name']
+                bio = cd['bio']
+                # update the users objects to new info
+                update_user = user
+                update_user.username = username
+                update_user.email = email
+                update_user.save()
+                update_profile = profile
+                update_profile.first_name = first_name
+                update_profile.last_name = last_name
+                update_profile.bio = bio
+                update_profile.save()
+                # update the users session informaiton saved
+                updateSessionUsername(request, update_user.username)
+                # new activity for updating your profile
+                description = 'You have updated your user profile'
+                user_profile_update = UserActivity.objects.create(
+                    user = currentUser,
+                    description = description,
+                    status = 1
+                )
+                # go back home
+                return redirect('home_page')
+        # check to see if password was updated
+        if 'passwordSubmit' in request.POST:
+            # grab the submitted form
+            updatePassword = PasswordUpdateForm(request.POST)
+            # check to see if the form is validated
+            if updatePassword.is_valid():
+                # grab the cleaned data
+                cd = updatePassword.cleaned_data
+                # grab the form info
+                current_password = cd['current_password']
+                new_password = cd['new_password']
+                verify_password = cd['verify_password']
+                # authenticate the old password before storing the new password
+                user = authenticate(username=currentUser.username, password=current_password)
+                # check to see if user is valid
+                if user:
+                    # check to see if the new and verify passwords are the same
+                    if new_password == verify_password:
+                        # has the passowrd
+                        secured_password = make_password(new_password)
+                        # update the users password
+                        update_user = user
+                        update_user.password = secured_password
+                        update_user.save()
+                        # new activity for updating your profile
+                        description = 'You have updated your password'
+                        user_profile_update = UserActivity.objects.create(
+                            user = currentUser,
+                            description = description,
+                            status = 1
+                        )
+                        # go back to the home page
+                        return redirect('home_page')
+                    else:
+                        # error message
+                        passwordMessage = 'The two passwords do not match'
+                        # if the passwords do no match
+                else:
+                    # error message
+                    passwordMessage = 'Current password does not match our records'
+                    # in case the old password is not what is saved in the database
+        # grab the info submited
+        if 'infoSubmit' in request.POST:
+            # grab the submiited form
+            updateInfo = InfoUpdateForm(request.POST)
+            # check if form is validated
+            if updateInfo.is_valid():
+                # clean data from form
+                cd = updateInfo.cleaned_data
+                # grab the form information
+                phone = cd['phone']
+                dob = cd['dob']
+                street = cd['street']
+                city = cd['city']
+                state = cd['state']
+                zip_code = cd['zip_code']
+                # update the exisitng profile
+                update_profile = profile
+                update_profile.phone = phone
+                update_profile.dob = dob
+                update_profile.street = street
+                update_profile.city = city
+                update_profile.state = state
+                update_profile.zip_code = zip_code
+                update_profile.save()
+                # new activity for updating your profile
+                description = 'You have updated your profile info'
+                user_profile_update = UserActivity.objects.create(
+                    user = currentUser,
+                    description = description,
+                    status = 1
+                )
+                # send user to home page
+                return redirect('home_page')
+        # grab the privacy for that was submiited
+        if 'privacySubmit' in request.POST:
+            # grab the form
+            updatePrivacy = PrivacyUpdateForm(request.POST)
+            # validate the form
+            if updatePrivacy.is_valid():
+                # clean the form data
+                cd = updatePrivacy.cleaned_data
+                # grab the content
+                groups = cd['groups']
+                friends = cd['friends']
+                expenses = cd['expenses']
+                searchable = cd['searchable']
+                # upate the privacy
+                update_privacy = privacy
+                update_privacy.groups = groups
+                update_privacy.friends = friends
+                update_privacy.expenses = expenses
+                update_privacy.searchable = searchable
+                update_privacy.save()
+                # new activity for updating your profile
+                description = 'You have updated your privacy settings'
+                user_profile_update = UserActivity.objects.create(
+                    user = currentUser,
+                    description = description,
+                    status = 1
+                )
+                # send the user to the home page
+                return redirect('home_page')
+    AccountUpdate = AccountUpdateForm(instance=user)
+    UserUpdate = UserUpdateForm(instance=profile)
+    PasswordUpdate = PasswordUpdateForm()
+    InfoUpdate = InfoUpdateForm(instance=profile)
+    PrivacyUpdate = PrivacyUpdateForm()
+    parameters = {
+        'user':user,
+        'profile':profile,
+        'privacy':privacy,
+        'AccountUpdate':AccountUpdate,
+        'UserUpdate':UserUpdate,
+        'PasswordUpdate':PasswordUpdate,
+        'InfoUpdate':InfoUpdate,
+        'PrivacyUpdate':PrivacyUpdate,
+        'passwordMessage':passwordMessage,
+    }
+    return render(request, 'users/update_profile.html', parameters)
+
 # ensure someoene is logged in
 @login_required(login_url='signup')
 # the logout screen

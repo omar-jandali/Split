@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from localflavor.us.forms import USStateField, USPhoneNumberField, USZipCodeField
- 
+
 # all model imports related to this project
 from .models import *
 
@@ -72,3 +72,51 @@ class VerifyBusinessForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['dba', 'lob', 'street', 'city', 'state', 'zip_code']
+
+# the form for updating users accounts
+class AccountUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+# the form allows the user to update public information
+class UserUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=20, label="First Name")
+    last_name = forms.CharField(max_length=20, label="Last Name")
+    class Meta:
+        model = Profile
+        fields = ['bio', 'first_name', 'last_name']
+
+# the following will allow user to update his profile infomraiton
+class InfoUpdateForm(forms.ModelForm):
+    dob = forms.DateField(widget=forms.widgets.DateInput(attrs={'type':'date'}))
+    class Meta:
+        model = Profile
+        fields = ['phone', 'dob', 'street', 'city', 'state', 'zip_code']
+
+# the form that will update the users Password
+class PasswordUpdateForm(forms.Form):
+    current_password = forms.CharField(max_length=20, label="Current password", widget=forms.PasswordInput)
+    new_password = forms.CharField(max_length=20, label="New password", widget=forms.PasswordInput)
+    verify_password = forms.CharField(max_length=20, label="Verify password", widget=forms.PasswordInput)
+
+# the form is going to be used to update the users privacy settings
+class PrivacyUpdateForm(forms.ModelForm):
+    privacy_choices = (('1', 'Everyone'),
+                       ('2', 'Friends'),
+                       ('3', 'Only Me'))
+    friends = forms.TypedChoiceField(
+        label="Friends", choices=privacy_choices
+    )
+    groups = forms.TypedChoiceField(
+        label="Friends", choices=privacy_choices
+    )
+    expenses = forms.TypedChoiceField(
+        label="Friends", choices=privacy_choices
+    )
+    searchable = forms.TypedChoiceField(
+        label="Friends", choices=privacy_choices
+    )
+    class Meta:
+        model = Privacy
+        fields = ['friends', 'groups', 'expenses', 'searchable']

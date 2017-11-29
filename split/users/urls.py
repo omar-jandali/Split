@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^personal/$', views.verify_personal, name='personal'),
     url(r'^business/$', views.verify_business, name='business'),
     url(r'^search/$', views.search_user, name="searched"),
+    url(r'^update_profile/$', views.update_profile, name="update_profile"),
     url(r'^(?P<username>[\w+]+)/$', views.user_profile, name='user_profile'),
     url(r'^(?P<username>[\w+]+)/request/$', views.send_request, name='send_request'),
     url(r'^(?P<username>[\w+]+)/accept/$', views.accept_request, name='accept_request'),

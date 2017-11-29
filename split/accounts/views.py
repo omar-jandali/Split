@@ -106,8 +106,10 @@ def create_user_synapse(request):
 
     base_document = SynapseUser.add_base_document(synapseUser, **options)
     value = 'https://www.facebook.com/valid'
-    social_document = base_document.add_social_document(type= 'FACEBOOK', value=value)
-    virtual_document = base_document.add_virtual_document(type='SSN', value='2222')
+    url = 'https://cdn.synapsepay.com/static_assets/logo@2x.png'
+    # social_document = base_document.add_social_document(type= 'FACEBOOK', value=value)
+    # virtual_document = base_document.add_virtual_document(type='SSN', value='2222')
+    physical_document = base_document.add_physical_document(type='GOVT_ID', url=url)
 
 # ensure someone i slogged in
 @login_required

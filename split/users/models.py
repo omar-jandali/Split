@@ -47,3 +47,23 @@ class UserActivity(models.Model):
     # 1 = unseen
     # 2 = seen
     created = models.DateTimeField(auto_now_add=True)
+
+# Privacy sotres every users different privacy settings for viewing profiles
+class Privacy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    groups = models.SmallIntegerField(default=1)
+    # 1 = everyone
+    # 2 = friends
+    # 3 = me
+    friends = models.SmallIntegerField(default=1)
+    # 1 = everyone
+    # 2 = friends
+    # 3 = me
+    expenses = models.SmallIntegerField(default=1)
+    # 1 = everyone
+    # 2 = friends
+    # 3 = me
+    searchable = models.SmallIntegerField(default=1)
+    # 1 = everyone
+    # 2 = friends
+    # 3 = me
