@@ -1,6 +1,6 @@
 # standard import statements
 from users.models import Profile, Friend, UserActivity
-from accounts.views import create_transaction
+from accounts.views import create_transaction, local_accounts
 from general.views import *
 from .models import *
 from .forms import *
@@ -658,6 +658,8 @@ def verify_expense(request, expenseid, activityid):
             host = member
     # create the transaction
     create_transaction(request, activityid)
+    # save and update accounts locally
+    local_accounts(request)
     # update expense from validation to specific
     expense.status = 2
     # save the change
