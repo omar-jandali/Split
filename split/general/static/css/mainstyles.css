@@ -1,112 +1,36 @@
-.backgrounded {
-  background-color: white !important;
-}
-
-.content-background {
+.testing-color-1 {
   background-color: lightblue !important;
 }
 
-.no-padding {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
+.testing-color-2 {
+  background-color: lightgreen !important;
 }
 
-.border-padding {
-  padding: 8px !important;
+.testing-color-3 {
+  background-color: white !important;
 }
 
-.padding-center {
-  padding-left: auto !important;
-  padding-right: auto !important;
-  padding-top: auto !important;
-  padding-bottom: auto !important;
+.padding-icons {
+  padding-top: 1em !important;
 }
 
-.border-margin-top {
-  padding-top: 10px !important;
+.margin-icons {
+  margin: .5em !important;
 }
 
-.align-center-item {
+.center-item-h {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cetner-text-h {
   text-align: center !important;
-  align-items: center !important;
 }
 
-.align-right-item {
-  text-align: right !important;
-  align-items: right !important;
+.fill-page-height {
+  height: 65em !important;
 }
 
-.align-margin-right {
-  margin-right: 15px !important;
-}
-
-.align-margin-left {
-  margin-left: 10px !important;
-}
-
-.align-center-v {
-  margin-top: 16px !important;
-  margin-bottom: 16px !important;
-}
-
-.solid-borders {
-  border-bottom: 1px solid black !important;
-}
-
-.header-icon-size {
-  height: 42px !important;
-}
-
-.icon-margins {
-  margin-left: 8px !important;
-  margin-right: 8px !important;
-}
-
-.full-height {
-  height: 100vh !important;
-}
-
-.small-margin-left {
-  margin-left: 50px !important;
-}
-
-.fixed-position {
-  position: fixed !important;
-}
-
-.page-header {
-  margin-top: 10px !important;
-}
-
-.scrollable-view-full {
-  width: 100% !important;
-  margin-top: 10px !important;
-  margin-bottom: 10px !important;
-  max-height: 84vh !important;
-  overflow-y: scroll !important;
-}
-
-.scrollable-view-host {
-  width: 100% !important;
-  margin-top: 14px !important;
-  margin-bottom: 10px !important;
-  max-height: 80vh !important;
-  overflow-y: scroll !important;
-}
-
-.scrollable-view-expenses {
-  width: 100% !important;
-  margin-top: 14px !important;
-  margin-bottom: 10px !important;
-  max-height: 79vh !important;
-  overflow-y: scroll !important;
-}
-
-.content-max-height {
-  height: 90vh !important;
-  overflow-y: hidden !important;
-}
-
-.text-24{
-  text
+.icon-height {
+  height: 2.5em !important;
 }
